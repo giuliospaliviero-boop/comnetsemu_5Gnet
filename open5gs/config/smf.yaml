@@ -14,9 +14,11 @@ smf:
       - addr: 127.0.0.4
     subnet:
       - addr: 10.45.0.1/16
-        dnn: internet
+        dnn: internet      # Used for eMBB
       - addr: 10.46.0.1/16
-        dnn: mec
+        dnn: mec           # Used for URLLC
+      - addr: 10.47.0.1/16
+        dnn: iot           # Used for mMTC
     dns:
       - 8.8.8.8
       - 8.8.4.4
@@ -36,9 +38,11 @@ nrf:
 upf:
     pfcp:
       - addr: 192.168.0.112
-        dnn: internet
+        dnn: internet     # Cloud UPF handles eMBB
+      - addr: 192.168.0.112
+        dnn: iot          # Cloud UPF handles mMTC
       - addr: 192.168.0.113
-        dnn: mec
+        dnn: mec          # MEC UPF handles URLLC
 
 #
 # parameter:

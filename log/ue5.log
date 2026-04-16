@@ -1,0 +1,16 @@
+UERANSIM v3.2.6
+[2026-04-16 09:39:38.498] [nas] [info] UE switches to state [MM-DEREGISTERED/PLMN-SEARCH]
+[2026-04-16 09:39:38.511] [rrc] [debug] New signal detected for cell[1], total [1] cells in coverage
+[2026-04-16 09:39:38.511] [nas] [info] Selected plmn[001/01]
+[2026-04-16 09:39:38.511] [rrc] [warning] Suitable cell selection failed in [1] cells. [0] out of PLMN, [0] no SI, [0] reserved, [1] barred, ftai [0]
+[2026-04-16 09:39:38.511] [rrc] [warning] Acceptable cell selection failed in [1] cells. [0] no SI, [0] reserved, [1] barred, ftai [0]
+[2026-04-16 09:39:38.511] [rrc] [error] Cell selection failure, no suitable or acceptable cell found
+[2026-04-16 09:39:44.014] [nas] [info] UE switches to state [MM-DEREGISTERED/NO-CELL-AVAILABLE]
+[2026-04-16 09:40:08.529] [rrc] [warning] Suitable cell selection failed in [1] cells. [0] out of PLMN, [0] no SI, [0] reserved, [1] barred, ftai [0]
+[2026-04-16 09:40:08.529] [rrc] [warning] Acceptable cell selection failed in [1] cells. [0] no SI, [0] reserved, [1] barred, ftai [0]
+[2026-04-16 09:40:08.529] [rrc] [error] Cell selection failure, no suitable or acceptable cell found
+[2026-04-16 09:40:38.555] [rrc] [warning] Suitable cell selection failed in [1] cells. [0] out of PLMN, [0] no SI, [0] reserved, [1] barred, ftai [0]
+[2026-04-16 09:40:38.555] [rrc] [warning] Acceptable cell selection failed in [1] cells. [0] no SI, [0] reserved, [1] barred, ftai [0]
+[2026-04-16 09:40:38.555] [rrc] [error] Cell selection failure, no suitable or acceptable cell found
+[2026-04-16 09:40:47.087] [rrc] [debug] Signal lost for cell[1], total [0] cells in coverage
+[2026-04-16 09:40:47.087] [nas] [error] PLMN selection failure, no cells in coverage

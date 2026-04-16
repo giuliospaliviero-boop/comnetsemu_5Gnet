@@ -1,0 +1,26 @@
+mcc: '001'
+mnc: '01'
+
+nci: '0x000000010'  # Identifier for gNB 1
+idLength: 32
+tac: 1
+
+linkIp: 192.168.0.131  # gNB 1 IP in Mininet
+ngapIp: 192.168.0.131
+gtpIp: 192.168.0.131
+
+# AMF address information (for Control Plane IP)
+amfConfigs:
+  - address: 192.168.0.111
+    port: 38412
+
+# List of supported S-NSSAIs
+slices:
+  - sst: 1  # eMBB
+    sd: 1
+  - sst: 2  # URLLC
+    sd: 1
+  - sst: 3  # mMTC
+    sd: 1
+
+ignoreStreamIds: true

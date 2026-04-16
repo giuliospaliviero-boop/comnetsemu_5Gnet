@@ -1,0 +1,198 @@
+Open5GS daemon v2.4.4
+
+04/14 13:03:04.328: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/14 13:03:04.328: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/14 13:03:04.334: [sock] ERROR: socket bind(2) [192.168.0.112]:8805 failed (99:Cannot assign requested address) (../lib/core/ogs-socket.c:109)
+04/14 13:03:04.334: [sock] ERROR: udp_server() [192.168.0.112]:8805 failed (99:Cannot assign requested address) (../lib/core/ogs-udp.c:62)
+04/14 13:03:04.334: [app] ERROR: Failed to intialize UPF (../src/upf/app.c:28)
+04/14 13:03:04.334: [app] FATAL: Open5GS initialization failed. Aborted (../src/main.c:219)
+Open5GS daemon v2.4.4
+
+04/14 13:13:11.971: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/14 13:13:11.971: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/14 13:13:11.981: [sock] ERROR: socket bind(2) [192.168.0.112]:8805 failed (99:Cannot assign requested address) (../lib/core/ogs-socket.c:109)
+04/14 13:13:11.981: [sock] ERROR: udp_server() [192.168.0.112]:8805 failed (99:Cannot assign requested address) (../lib/core/ogs-udp.c:62)
+04/14 13:13:11.981: [app] ERROR: Failed to intialize UPF (../src/upf/app.c:28)
+04/14 13:13:11.981: [app] FATAL: Open5GS initialization failed. Aborted (../src/main.c:219)
+Open5GS daemon v2.4.4
+
+04/14 13:15:34.330: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/14 13:15:34.330: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/14 13:15:34.337: [sock] ERROR: socket bind(2) [192.168.0.112]:8805 failed (99:Cannot assign requested address) (../lib/core/ogs-socket.c:109)
+04/14 13:15:34.337: [sock] ERROR: udp_server() [192.168.0.112]:8805 failed (99:Cannot assign requested address) (../lib/core/ogs-udp.c:62)
+04/14 13:15:34.337: [app] ERROR: Failed to intialize UPF (../src/upf/app.c:28)
+04/14 13:15:34.337: [app] FATAL: Open5GS initialization failed. Aborted (../src/main.c:219)
+Open5GS daemon v2.4.4
+
+04/14 13:18:24.265: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/14 13:18:24.265: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/14 13:18:24.279: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/14 13:18:24.279: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/14 13:18:24.292: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+04/14 13:29:28.716: [app] INFO: SIGHUP received (../src/main.c:58)
+Open5GS daemon v2.4.4
+
+04/14 15:18:27.211: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/14 15:18:27.211: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/14 15:18:27.222: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/14 15:18:27.223: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/14 15:18:27.223: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/14 15:19:21.384: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/14 15:19:21.384: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/14 15:19:21.392: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/14 15:19:21.392: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/14 15:19:21.392: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/14 15:22:43.855: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/14 15:22:43.855: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/14 15:22:43.864: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/14 15:22:43.864: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/14 15:22:43.864: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/14 16:40:51.952: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/14 16:40:51.952: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/14 16:40:51.962: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/14 16:40:51.962: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/14 16:40:51.963: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/15 14:08:44.951: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/15 14:08:44.951: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/15 14:08:44.985: [sock] ERROR: socket bind(2) [192.168.0.112]:8805 failed (99:Cannot assign requested address) (../lib/core/ogs-socket.c:109)
+04/15 14:08:44.985: [sock] ERROR: udp_server() [192.168.0.112]:8805 failed (99:Cannot assign requested address) (../lib/core/ogs-udp.c:62)
+04/15 14:08:44.985: [app] ERROR: Failed to intialize UPF (../src/upf/app.c:28)
+04/15 14:08:44.985: [app] FATAL: Open5GS initialization failed. Aborted (../src/main.c:219)
+Open5GS daemon v2.4.4
+
+04/15 14:12:24.374: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/15 14:12:24.374: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/15 14:12:24.393: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/15 14:12:24.394: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/15 14:12:24.394: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+04/15 14:20:45.934: [app] INFO: SIGHUP received (../src/main.c:58)
+Open5GS daemon v2.4.4
+
+04/15 14:21:37.667: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/15 14:21:37.667: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/15 14:21:37.675: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/15 14:21:37.675: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/15 14:21:37.675: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/15 14:29:01.927: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/15 14:29:01.927: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/15 14:29:01.935: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/15 14:29:01.936: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/15 14:29:01.936: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/15 14:44:52.412: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/15 14:44:52.412: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/15 14:44:52.419: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/15 14:44:52.419: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/15 14:44:52.419: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/15 15:56:48.134: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/15 15:56:48.134: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/15 15:56:48.143: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/15 15:56:48.144: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/15 15:56:48.144: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/16 06:22:22.536: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/16 06:22:22.536: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/16 06:22:22.617: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/16 06:22:22.617: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/16 06:22:22.617: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+04/16 06:26:16.376: [app] INFO: SIGHUP received (../src/main.c:58)
+Open5GS daemon v2.4.4
+
+04/16 06:31:04.438: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/16 06:31:04.438: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/16 06:31:04.448: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/16 06:31:04.448: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/16 06:31:04.454: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/16 06:36:06.295: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/16 06:36:06.295: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/16 06:36:06.302: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/16 06:36:06.302: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/16 06:36:06.302: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/16 08:33:01.835: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/16 08:33:01.835: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/16 08:33:01.842: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/16 08:33:01.842: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/16 08:33:01.843: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/16 08:34:39.866: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/16 08:34:39.866: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/16 08:34:39.874: [sock] ERROR: socket bind(2) [192.168.0.112]:8805 failed (99:Cannot assign requested address) (../lib/core/ogs-socket.c:109)
+04/16 08:34:39.874: [sock] ERROR: udp_server() [192.168.0.112]:8805 failed (99:Cannot assign requested address) (../lib/core/ogs-udp.c:62)
+04/16 08:34:39.874: [app] ERROR: Failed to intialize UPF (../src/upf/app.c:28)
+04/16 08:34:39.874: [app] FATAL: Open5GS initialization failed. Aborted (../src/main.c:219)
+Open5GS daemon v2.4.4
+
+04/16 09:04:57.684: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/16 09:04:57.685: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/16 09:04:57.694: [sock] ERROR: socket bind(2) [192.168.0.112]:8805 failed (99:Cannot assign requested address) (../lib/core/ogs-socket.c:109)
+04/16 09:04:57.694: [sock] ERROR: udp_server() [192.168.0.112]:8805 failed (99:Cannot assign requested address) (../lib/core/ogs-udp.c:62)
+04/16 09:04:57.694: [app] ERROR: Failed to intialize UPF (../src/upf/app.c:28)
+04/16 09:04:57.694: [app] FATAL: Open5GS initialization failed. Aborted (../src/main.c:219)
+Open5GS daemon v2.4.4
+
+04/16 09:06:29.405: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/16 09:06:29.405: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/16 09:06:29.413: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/16 09:06:29.413: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/16 09:06:29.414: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/16 09:09:10.293: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/16 09:09:10.293: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/16 09:09:10.301: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/16 09:09:10.301: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/16 09:09:10.301: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/16 09:21:35.774: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/16 09:21:35.774: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/16 09:21:35.781: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/16 09:21:35.781: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/16 09:21:35.781: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/16 09:30:08.734: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/16 09:30:08.734: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/16 09:30:08.741: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/16 09:30:08.742: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/16 09:30:08.742: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/16 09:33:23.137: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/16 09:33:23.137: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/16 09:33:23.144: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/16 09:33:23.144: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/16 09:33:23.144: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/16 09:37:08.154: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/16 09:37:08.154: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/16 09:37:08.160: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/16 09:37:08.160: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/16 09:37:08.161: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+04/16 09:39:24.105: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+04/16 09:39:24.105: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+04/16 09:39:24.112: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+04/16 09:39:24.112: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+04/16 09:39:24.113: [app] INFO: UPF initialize...done (../src/upf/app.c:31)

@@ -1,0 +1,8 @@
+UERANSIM v3.2.6
+[2026-04-16 09:39:30.546] [sctp] [info] Trying to establish SCTP connection... (192.168.0.111:38412)
+[2026-04-16 09:39:30.607] [sctp] [error] Connecting to 192.168.0.111:38412 failed. SCTP could not connect: Connection refused
+[2026-04-16 09:39:36.481] [rrc] [debug] UE[1] new signal detected
+[2026-04-16 09:39:37.362] [rrc] [debug] UE[2] new signal detected
+[2026-04-16 09:39:38.507] [rrc] [debug] UE[3] new signal detected
+[2026-04-16 09:39:39.855] [rrc] [debug] UE[4] new signal detected
+[2026-04-16 09:39:40.454] [rrc] [debug] UE[5] new signal detected
