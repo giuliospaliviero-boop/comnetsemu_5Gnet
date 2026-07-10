@@ -21,8 +21,6 @@ from option3_qos_ambr_policing import option3_menu
 
 if __name__ == "__main__":
 
-    #AUTOTEST_MODE = os.environ.get("COMNETSEMU_AUTOTEST_MODE", 0)
-
     setLogLevel("info")
 
     prj_folder="/home/comnetsemu/project_NET/comnetsemu_5Gnet"    # TO BE MODIFIED!
@@ -236,39 +234,6 @@ if __name__ == "__main__":
         )
         ue_nodes.append(ue)
 
-    #env["COMPONENT_NAME"]="ue"
-    #ue = net.addDockerHost(
-    #    "ue", 
-    #    dimage="myueransim_v3-2-6",
-    #    ip="192.168.0.132/24",
-        # dcmd="",
-    #    dcmd="bash /mnt/ueransim/open5gs_ue_init.sh",
-    #    docker_args={
-    #        "environment": env,
-    #        "volumes": {
-    #            prj_folder + "/ueransim/config": {
-    #                "bind": "/mnt/ueransim",
-    #                "mode": "rw",
-    #            },
-    #            prj_folder + "/log": {
-    #                "bind": "/mnt/log",
-    #                "mode": "rw",
-    #            },
-    #            "/etc/timezone": {
-    #                "bind": "/etc/timezone",
-    #                "mode": "ro",
-    #            },
-    #            "/etc/localtime": {
-    #                "bind": "/etc/localtime",
-    #                "mode": "ro",
-    #            },
-    #            "/dev": {"bind": "/dev", "mode": "rw"},
-    #        },
-    #        "cap_add": ["NET_ADMIN"],
-    #        "devices": "/dev/net/tun:/dev/net/tun:rwm"
-    #    },
-    #)
-
     info("*** Add controller\n")
     net.addController("c0")
 
@@ -279,43 +244,37 @@ if __name__ == "__main__":
     s4 = net.addSwitch("s4")
 
     info("*** Adding links\n")
+    # Shaping (HTB rate limiter) is applied only on the s2-s3 bottleneck
+
     # Access to Edge (MEC) - Ultra Low Latency (2ms)
-    net.addLink(s1, s2, bw=1000, delay="2ms", intfName1="s1-s2", intfName2="s2-s1")
+    net.addLink(s1, s2, delay="2ms", intfName1="s1-s2", intfName2="s2-s1")
 
-    # Edge to Cloud - High Latency (40ms), Lower Bandwidth (100Mbps bottleneck)
-    net.addLink(s2, s3, bw=100, delay="40ms", intfName1="s2-s3", intfName2="s3-s2")
+    # Edge to Cloud - bottleneck: 50 Mbps, 40 ms, buffer approx. 1x BDP
+    # BDP = 50 Mbps x 88 ms RTT is approx. 0.55 MB, so roughly 370 full-size packets
+    net.addLink(s2, s3, bw=50, delay="40ms", max_queue_size=370, 
+                intfName1="s2-s3", intfName2="s3-s2")
 
-    # Edge to Cloud (TWIN for IoT/QoS testing) - High Latency (40ms), Standard Bandwidth
-    net.addLink(s2, s4, bw=1000, delay="40ms", intfName1="s2-s4", intfName2="s4-s2")
+    # Edge to IoT Cloud (twin path, uncongested reference) - High Latency (40ms)
+    net.addLink(s2, s4, delay="40ms", intfName1="s2-s4", intfName2="s4-s2")
 
-    # Connected Control Plane to Edge tier (s2) --> faster signaling
-    net.addLink(cp, s2, bw=1000, delay="1ms", intfName1="cp-s2", intfName2="s2-cp")
+    # Control Plane at the Edge tier (s2) --> fast signaling
+    net.addLink(cp, s2, delay="1ms", intfName1="cp-s2", intfName2="s2-cp")
 
-    # Connect Cloud UPF to Cloud switch
-    net.addLink(upf_cld, s3, bw=1000, delay="1ms", intfName1="upf-s3", intfName2="s3-upf_cld")
+    # UPF attachments
+    net.addLink(upf_cld, s3, delay="1ms", intfName1="upf-s3", intfName2="s3-upf_cld")
+    net.addLink(upf_iot, s4, delay="1ms", intfName1="upf_iot-s4", intfName2="s4-upf_iot")
+    net.addLink(upf_mec, s2, delay="1ms", intfName1="upf_mec-s2", intfName2="s2-upf_mec")
 
-    # Connect Cloud UPF (IoT/QoS testing) to Twin Cloud switch
-    net.addLink(upf_iot, s4, bw=1000, delay="1ms", intfName1="upf_iot-s4", intfName2="s4-upf_iot")
+    # RAN attachments
+    net.addLink(gnb1, s1, delay="1ms", intfName1="gnb1-s1", intfName2="s1-gnb1")
+    net.addLink(gnb2, s1, delay="1ms", intfName1="gnb2-s1", intfName2="s1-gnb2")
 
-    # Connect Edge UPF to Edge switch
-    net.addLink(upf_mec, s2, bw=1000, delay="1ms", intfName1="upf_mec-s2", intfName2="s2-upf_mec")
-
-    # Connect gNBs to access switch (s1)
-    net.addLink(gnb1, s1, bw=1000, delay="1ms", intfName1="gnb1-s1", intfName2="s1-gnb1")
-    net.addLink(gnb2, s1, bw=1000, delay="1ms", intfName1="gnb2-s1", intfName2="s1-gnb2")
-
-    # Connect all 10 UEs to s1
+    # UEs
     for i, ue_node in enumerate(ue_nodes):
         ue_index = i + 1
-        net.addLink(ue_node, s1, bw=1000, delay="1ms", intfName1=f"ue{ue_index}-s1", intfName2=f"s1-ue{ue_index}")
+        net.addLink(ue_node, s1, delay="1ms", 
+                    intfName1=f"ue{ue_index}-s1", intfName2=f"s1-ue{ue_index}")
 
-
-    #print(f"*** Open5GS: Init subscriber for UE 0")
-    #o5gs   = Open5GS( "172.17.0.2" ,"27017")
-    #o5gs.removeAllSubscribers()
-    #with open( prj_folder + "/python_modules/subscriber_profile.json" , 'r') as f:
-    #    profile = json.load( f )
-    #o5gs.addSubscriber(profile)
 
     print("*** Open5GS: Init subscribers for 10 UEs (Slicing)")
     o5gs = Open5GS("172.17.0.2", "27017")
@@ -339,12 +298,61 @@ if __name__ == "__main__":
         {"imsi": "001010000000010", "sst": 2, "dnn": "mec",      "bw": 20},  # UE10 URLLC
     ]
 
-    for config in ue_configs:
-        # Create a deep copy of the base profile so we don't overwrite it
-        profile = copy.deepcopy(base_profile)
+    # Per-slice QoS profile:
+    # - eMBB : 5QI 9  (priority 90, PDB 300 ms)
+    # - URLLC: 5QI 80 (low-latency, priority 68, PDB 10 ms)
+    #          ARP: highest priority (2)
+    # - mMTC : 5QI 9  (lowest ARP priority, delay-tolerant)
+    SLICE_QOS = {
+        1: {"index": 9, "arp_pl": 8, "cap": 1, "vuln": 2},   # eMBB
+        2: {"index": 80, "arp_pl": 2, "cap": 2, "vuln": 1},  # URLLC
+        3: {"index": 9, "arp_pl": 14, "cap": 1, "vuln": 2},  # mMTC
+    }
 
+#    for config in ue_configs:
+        # Create a deep copy of the base profile so we don't overwrite it
+#        profile = copy.deepcopy(base_profile)
+
+#        profile["imsi"] = config["imsi"]
+
+#        profile["ambr"] = {
+#            "uplink": {"value": 200, "unit": 2},    # unit 2 = Mbps
+#            "downlink": {"value": 200, "unit": 2},
+#        }
+
+#        profile["slice"] = [{
+#            "sst": config["sst"],
+#            "sd": "000001",
+#            "default_indicator": True,
+#            "session": [{
+#                "name": config["dnn"],
+#                "type": 3,
+#                "pcc_rule": [],
+#                "ambr": {
+#                    "uplink": {"value": config["bw"], "unit": 2},
+#                    "downlink": {"value": config["bw"], "unit": 2}
+#                },
+#                "qos": {
+#                    "index": 9 if config["sst"] == 1 else (80 if config["sst"] == 2 else 5),
+#                    "arp": {"priority_level": 10, "pre_emption_capability": 1, "pre_emption_vulnerability": 1}
+#                }
+#            }]
+#        }]
+
+#        o5gs.addSubscriber(profile)
+#        print(f"Added UE with IMSI: {config['imsi']} for SST: {config['sst']} (DNN: {config['dnn']})")
+    for config in ue_configs:
+        profile = copy.deepcopy(base_profile)
         profile["imsi"] = config["imsi"]
 
+        # UE-AMBR must upper-bound the session AMBR (.json at 1 Mbps)
+        # Enforced by the gNB in real 5G; UERANSIM does not enforce it, OVS emulates it
+        profile["ambr"] = {
+            "uplink": {"value": 200, "unit": 2},
+            "downlink": {"value": 200, "unit": 2},
+        }
+
+        q = SLICE_QOS[config["sst"]]
         profile["slice"] = [{
             "sst": config["sst"],
             "sd": "000001",
@@ -358,15 +366,19 @@ if __name__ == "__main__":
                     "downlink": {"value": config["bw"], "unit": 2}
                 },
                 "qos": {
-                    "index": 9 if config["sst"] == 1 else (80 if config["sst"] == 2 else 5),
-                    "arp": {"priority_level": 10, "pre_emption_capability": 1, "pre_emption_vulnerability": 1}
+                    "index": q["index"],
+                    "arp": {
+                        "priority_level": q["arp_pl"],
+                        "pre_emption_capability": q["cap"],
+                        "pre_emption_vulnerability": q["vuln"]
+                    }
                 }
             }]
         }]
 
         o5gs.addSubscriber(profile)
-        print(f"Added UE with IMSI: {config['imsi']} for SST: {config['sst']} (DNN: {config['dnn']})")
-
+        print(f"Added IMSI {config['imsi']} | SST {config['sst']} | DNN {config['dnn']} |"
+              f"AMBR {config['bw']} Mbps | 5QI {q['index']} | ARP PL {q['arp_pl']}")
 
     info("\n*** Starting network\n")
     net.start()
@@ -399,6 +411,24 @@ if __name__ == "__main__":
         ue.cmd(f"ip route replace {DNN_SUBNET[i]} dev uesimtun0")
         print(f"    ue{i}: PDU session up")
 
+#    info("*** Disabling NIC offloads\n")
+#    for sw_name in ("s1", "s2", "s3", "s4"):
+#        sw = net.get(sw_name)
+#        for intf in sw.intfList():
+#            if intf.name != "lo":
+#                sw.cmd(f"ethtool -K {intf.name} tso off gso off gro off")
+#    for h in [cp, upf_cld, upf_mec, upf_iot, gnb1, gnb2] + ue_nodes:
+#        for intf in h.intfList():
+#            if intf.name != "lo":
+#                h.cmd(f"ethtool -K {intf.name} tso off gso off gro off 2>/dev/null")
+
+    info("*** Warming up tunnel paths\n")
+    DN_GW = {1: "10.45.0.1", 2: "10.45.0.1", 7: "10.45.0.1", 8: "10.45.0.1",
+             3: "10.46.0.1", 4: "10.46.0.1", 9: "10.46.0.1", 10: "10.46.0.1",
+             5: "10.47.0.1", 6: "10.47.0.1"}
+    for i, ue in enumerate(ue_nodes, 1):
+        ue.cmd(f"ping -c 1 -W 1 {DN_GW[i]} > /dev/null 2>&1")
+
     # *** 5G Core - AMBR Policies for mMTC devices ***
     s1 = net.get('s1')
     ue5 = net.get('ue5')
@@ -411,10 +441,10 @@ if __name__ == "__main__":
     #interface_ue6 = ue6.defaultIntf().name
 
     s1.cmd(f"ovs-vsctl set interface {s1_ue5_port} ingress_policing_rate=5000")
-    s1.cmd(f"ovs-vsctl set interface {s1_ue5_port} ingress_policing_burst=500")
+    s1.cmd(f"ovs-vsctl set interface {s1_ue5_port} ingress_policing_burst=1000")
 
     s1.cmd(f"ovs-vsctl set interface {s1_ue6_port} ingress_policing_rate=5000")
-    s1.cmd(f"ovs-vsctl set interface {s1_ue6_port} ingress_policing_burst=500")
+    s1.cmd(f"ovs-vsctl set interface {s1_ue6_port} ingress_policing_burst=1000")
 
     #ue5.cmd(f"tc qdisc del dev {interface_ue5} root 2>/dev/null")
     #ue5.cmd(f"tc qdisc add dev {interface_ue5} root tbf rate 5mbit burst 32kbit latency 20ms")

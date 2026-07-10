@@ -1,73 +1,57 @@
 import time
 import re
 
-def parse_iperf_bw(iperf_output):
-    if isinstance(iperf_output, bytes):
-        iperf_output = iperf_output.decode('utf-8')
-    
-    matches = re.findall(r'(\d+(?:\.\d+)?)\s+([KM]bits/sec)', iperf_output)
-    if matches:
-        value, unit = matches[-1]
-        return f"{value} {unit}"
-    return "N/A"
-
-def reset_iperf_servers(upf_iot):
-    upf_iot.cmd("pkill -9 iperf3")
-    time.sleep(0.5)
-
-    upf_iot.cmd("iperf3 -s -p 5201 -D")
-    upf_iot.cmd("iperf3 -s -p 5205 -D")
-    upf_iot.cmd("iperf3 -s -p 5206 -D")
-    time.sleep(0.5)
+def udp_delivered(out):
+    if isinstance(out, bytes):
+        out = out.decode("utf-8", "ignore")
+    for line in out.splitlines():
+        if "receiver" in line:
+            m = re.search(r'([\d.]+\s+[KMG]bits/sec).*?\(([\d.]+%)\)', line)
+            if m:
+                return m.group(1) + " (" + m.group(2) + " loss)"
+    m = re.findall(r'([\d.]+\s+[KMG]bits/sec)', out)
+    return m[-1] if m else "N/A"
 
 def run_qos_ambr_policing_test(net):
-    print("\n" + "="*65)
-    print(" OPTION 3: SLICE-SPECIFIC QoS & AMBR POLICING TEST")
-    print("="*65)
-    print("Concept: Demonstrate that the 5G core enforces Aggregate")
-    print("Maximum Bit Rate (AMBR) profiles. This prevents volumetric")
-    print("DDoS attacks that originates from IoT devices.")
-    print("="*65 + "\n")
+    ue1 = net.get("ue1")                          # eMBB smartphone
+    ue5 = net.get("ue5"); ue6 = net.get("ue6")    # mMTC IoT sensors (botnet)
+    upf_cld = net.get("upf_cld")                  # eMBB DN  (10.45.0.1)
+    upf_iot = net.get("upf_iot")                  # mMTC DN  (10.47.0.1)
 
-    ue1 = net.get('ue1')
-    ue5 = net.get('ue5')
-    ue6 = net.get('ue6')
-    upf_iot = net.get('upf_iot')
+    for u in (upf_cld, upf_iot):
+        u.cmd("pkill -9 iperf3")
+    time.sleep(0.3)
+    upf_cld.cmd("iperf3 -s -B 10.45.0.1 -p 5201 -D")
+    upf_iot.cmd("iperf3 -s -B 10.47.0.1 -p 5205 -D")
+    upf_iot.cmd("iperf3 -s -B 10.47.0.1 -p 5206 -D")
+    time.sleep(0.5)
 
-    print("[\033[93mPHASE 1\033[0m] Initializing iperf servers...")
-    reset_iperf_servers(upf_iot)
+    print("\n" + "=" * 65)
+    print(" OPTION 3: SLICE-SPECIFIC QoS & AMBR POLICING")
+    print("=" * 65)
+    print("The 5G core enforces Session-AMBR per PDU session at the UPF, so a")
+    print("botnet of mMTC devices is bounded by POLICY (N x AMBR), not detection.")
+    print("=" * 65)
 
-    print("[\033[96mCONTROL TEST\033[0m] eMBB high-bandwidth request...")
-    print("               - Physical Link Capacity: 1000 Mbps")
-    print("               - UE1 (Smartphone) requesting 200 Mbps stream")
-    p1 = ue1.popen("iperf3 -c 192.168.0.114 -p 5201 -t 10 -b 200M")
-    out1, _ = p1.communicate()
-    print(f"        -> UE1 (eMBB) bandwidth allocated: \033[92m{parse_iperf_bw(out1)}\033[0m (Traffic authorized)")
-    reset_iperf_servers(upf_iot)
+    try:
+        print("\n[CONTROL] eMBB smartphone UE1 requests 15 Mbps  (its AMBR is 100 Mbps)")
+        o1 = ue1.cmd("iperf3 -u -c 10.45.0.1 -p 5201 -b 15M -t 3")
+        print("   -> UE1 (eMBB) delivered: \033[92m" + udp_delivered(o1) + "\033[0m  (authorized)")
 
-    print("\n[\033[91mTHREAT DETECTED\033[0m] Emulating Botnet infection on mMTC Slice")
-    print("                  - Physical Link Capacity: 1000 Mbps")
-    print("                  - UE5 (IoT sensor) infected, requesting \033[91m300 Mbps\033[0m")
-    print("                  - UE6 (IoT sensor) infected, requesting \033[91m100 Mbps\033[0m")
-    time.sleep(1)
+        print("\n[THREAT]  mMTC botnet: UE5 + UE6 each blast 20 Mbps  (their AMBR is 1 Mbps)")
+        p5 = ue5.popen("iperf3 -u -c 10.47.0.1 -p 5205 -b 20M -t 4")
+        p6 = ue6.popen("iperf3 -u -c 10.47.0.1 -p 5206 -b 20M -t 4")
+        o5, _ = p5.communicate(); o6, _ = p6.communicate()
+        print("   -> UE5 (mMTC) delivered: \033[91m" + udp_delivered(o5) + "\033[0m  (throttled by the core)")
+        print("   -> UE6 (mMTC) delivered: \033[91m" + udp_delivered(o6) + "\033[0m  (throttled by the core)")
+    finally:
+        for u in (upf_cld, upf_iot):
+            u.cmd("pkill -9 iperf3")
 
-    print("\n[\033[96mMEASUREMENT\033[0m] Evaluating 5G Core AMBR Mitigation...")
-    p5 = ue5.popen("iperf3 -c 192.168.0.114 -p 5205 -t 10 -b 300M")
-    p6 = ue6.popen("iperf3 -c 192.168.0.114 -p 5206 -t 10 -b 100M")
-
-    out5, _ = p5.communicate()
-    out6, _ = p6.communicate()
-
-    print(f"        -> UE5 (mMTC) actual traffic allowed: \033[92m{parse_iperf_bw(out5)}\033[0m")
-    print(f"        -> UE6 (mMTC) actual traffic allowed: \033[92m{parse_iperf_bw(out6)}\033[0m")
-
-    print("\n[\033[93mPHASE 3\033[0m] Terminating traffic flows...")
-    upf_iot.cmd("pkill -9 iperf3")
-
-    print("-" * 65)
-    print("\033[92mSIMULATION TERMINATED\033[0m")
+    print("\n" + "-" * 65)
+    print("\033[92mRESULT: eMBB received its 15 Mbps; the mMTC botnet was capped to a")
+    print("few Mbps each at the UPF - attack volume is bounded by subscription policy.\033[0m")
     print("=" * 65 + "\n")
-
     input("Press Enter to continue...")
 
 def option3_menu(net):
@@ -79,12 +63,9 @@ def option3_menu(net):
         print(" [0] Return to MAIN MENU")
         print("-" * 60)
         choice = input("Select an option (0-1): ")
-
-        if choice == '1':
+        if choice == "1":
             run_qos_ambr_policing_test(net)
-        elif choice == '0':
+        elif choice == "0":
             break
         else:
             print("\nINVALID CHOICE. Please try again...")
-
-

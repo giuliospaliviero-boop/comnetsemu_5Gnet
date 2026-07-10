@@ -25,7 +25,7 @@ ip link set ogstun up
 iptables -t nat -A POSTROUTING -s "$TUN_NET" ! -o ogstun -j MASQUERADE
 
 # Wait fot the Mininet interface
-until ip -4 addr show | grep -p "$UPF_IP"; do sleep 1; done
+until ip -4 addr show | grep -q "$UPF_IP"; do sleep 1; done
 
 iperf3 -B "$TUN_IP" -s -fm &
 ./install/bin/open5gs-upfd

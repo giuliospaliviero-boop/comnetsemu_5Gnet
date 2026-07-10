@@ -1,18 +1,54 @@
 UERANSIM v3.2.6
-[2026-07-09 16:32:18.130] [sctp] [info] Trying to establish SCTP connection... (192.168.0.111:38412)
-[2026-07-09 16:32:18.192] [sctp] [error] Connecting to 192.168.0.111:38412 failed. SCTP could not connect: Connection refused
-[2026-07-09 16:32:24.367] [rrc] [debug] UE[1] new signal detected
-[2026-07-09 16:32:25.899] [rrc] [debug] UE[2] new signal detected
-[2026-07-09 16:32:27.394] [rrc] [debug] UE[3] new signal detected
-[2026-07-09 16:32:28.593] [rrc] [debug] UE[4] new signal detected
-[2026-07-09 16:32:29.185] [rrc] [debug] UE[5] new signal detected
-[2026-07-09 16:37:55.580] [rls] [debug] UE[1] signal lost
-[2026-07-09 16:37:55.580] [rls] [debug] UE[2] signal lost
-[2026-07-09 16:37:55.580] [rls] [debug] UE[3] signal lost
-[2026-07-09 16:37:55.580] [rls] [debug] UE[4] signal lost
-[2026-07-09 16:40:43.753] [rls] [debug] UE[1] signal lost
-[2026-07-09 16:40:43.757] [rls] [debug] UE[2] signal lost
-[2026-07-09 16:40:43.757] [rls] [debug] UE[3] signal lost
-[2026-07-09 16:40:43.757] [rls] [debug] UE[4] signal lost
-[2026-07-09 16:40:43.757] [rls] [debug] UE[5] signal lost
-[2026-07-09 16:41:47.188] [rls] [debug] UE[1] signal lost
+[2026-07-10 16:48:40.487] [sctp] [info] Trying to establish SCTP connection... (192.168.0.111:38412)
+[2026-07-10 16:48:40.558] [sctp] [info] SCTP connection established (192.168.0.111:38412)
+[2026-07-10 16:48:40.558] [sctp] [debug] SCTP association setup ascId[4]
+[2026-07-10 16:48:40.558] [ngap] [debug] Sending NG Setup Request
+[2026-07-10 16:48:40.596] [ngap] [debug] NG Setup Response received
+[2026-07-10 16:48:40.596] [ngap] [info] NG Setup procedure is successful
+[2026-07-10 16:48:41.523] [rrc] [debug] UE[1] new signal detected
+[2026-07-10 16:48:41.531] [rrc] [debug] UE[2] new signal detected
+[2026-07-10 16:48:41.572] [rrc] [info] RRC Setup for UE[2]
+[2026-07-10 16:48:41.572] [rrc] [debug] UE[3] new signal detected
+[2026-07-10 16:48:41.576] [rrc] [debug] UE[4] new signal detected
+[2026-07-10 16:48:41.584] [rrc] [info] RRC Setup for UE[1]
+[2026-07-10 16:48:41.588] [ngap] [debug] Initial NAS message received from UE[2]
+[2026-07-10 16:48:41.593] [ngap] [debug] Initial NAS message received from UE[1]
+[2026-07-10 16:48:41.595] [rrc] [debug] UE[5] new signal detected
+[2026-07-10 16:48:41.617] [rrc] [info] RRC Setup for UE[5]
+[2026-07-10 16:48:41.628] [ngap] [debug] Initial NAS message received from UE[5]
+[2026-07-10 16:48:41.841] [ngap] [debug] Initial Context Setup Request received
+[2026-07-10 16:48:41.903] [ngap] [debug] Initial Context Setup Request received
+[2026-07-10 16:48:41.903] [ngap] [debug] Initial Context Setup Request received
+[2026-07-10 16:48:42.025] [ngap] [info] PDU session resource(s) setup for UE[2] count[1]
+[2026-07-10 16:48:42.104] [ngap] [info] PDU session resource(s) setup for UE[1] count[1]
+[2026-07-10 16:48:42.116] [ngap] [info] PDU session resource(s) setup for UE[5] count[1]
+[2026-07-10 16:48:44.059] [rrc] [info] RRC Setup for UE[3]
+[2026-07-10 16:48:44.069] [ngap] [debug] Initial NAS message received from UE[3]
+[2026-07-10 16:48:44.074] [rrc] [info] RRC Setup for UE[4]
+[2026-07-10 16:48:44.079] [ngap] [debug] Initial NAS message received from UE[4]
+[2026-07-10 16:48:44.195] [ngap] [debug] Initial Context Setup Request received
+[2026-07-10 16:48:44.212] [ngap] [debug] Initial Context Setup Request received
+[2026-07-10 16:48:44.331] [ngap] [info] PDU session resource(s) setup for UE[3] count[1]
+[2026-07-10 16:48:44.333] [ngap] [info] PDU session resource(s) setup for UE[4] count[1]
+[2026-07-10 16:49:53.754] [rls] [debug] UE[1] signal lost
+[2026-07-10 16:49:53.754] [rls] [debug] UE[2] signal lost
+[2026-07-10 16:49:53.754] [rls] [debug] UE[3] signal lost
+[2026-07-10 16:49:53.754] [rls] [debug] UE[4] signal lost
+[2026-07-10 16:49:55.983] [rls] [debug] UE[1] signal lost
+[2026-07-10 16:49:55.983] [rls] [debug] UE[2] signal lost
+[2026-07-10 16:49:55.983] [rls] [debug] UE[3] signal lost
+[2026-07-10 16:49:55.983] [rls] [debug] UE[4] signal lost
+[2026-07-10 16:49:55.983] [rls] [debug] UE[5] signal lost
+[2026-07-10 18:15:22.497] [rls] [debug] UE[1] signal lost
+[2026-07-10 18:15:22.497] [rls] [debug] UE[2] signal lost
+[2026-07-10 18:15:22.497] [rls] [debug] UE[3] signal lost
+[2026-07-10 18:15:22.497] [rls] [debug] UE[4] signal lost
+[2026-07-10 18:20:54.428] [rls] [debug] UE[1] signal lost
+[2026-07-10 18:20:54.428] [rls] [debug] UE[3] signal lost
+[2026-07-10 18:20:54.428] [rls] [debug] UE[4] signal lost
+[2026-07-10 18:20:54.428] [rls] [debug] UE[5] signal lost
+[2026-07-10 18:20:58.492] [rls] [debug] UE[1] signal lost
+[2026-07-10 18:20:58.492] [rls] [debug] UE[2] signal lost
+[2026-07-10 18:20:58.492] [rls] [debug] UE[3] signal lost
+[2026-07-10 18:20:58.492] [rls] [debug] UE[4] signal lost
+[2026-07-10 18:20:58.492] [rls] [debug] UE[5] signal lost
