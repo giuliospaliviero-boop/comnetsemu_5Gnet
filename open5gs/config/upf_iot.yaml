@@ -1,0 +1,12 @@
+logger:
+    file: /open5gs/install/var/log/open5gs/upf_iot.log
+
+upf:
+    pfcp:
+      - addr: 192.168.0.114
+    gtpu:
+      - addr: 192.168.0.114
+    subnet:
+      - addr: 10.47.0.1/16
+        dnn: iot
+        dev: ogstun
