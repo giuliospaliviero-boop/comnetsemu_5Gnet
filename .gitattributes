@@ -1,0 +1,14 @@
+# Force LF on all detected-text files; overrides Windows autocrlf on checkout
+* text=auto eol=lf
+
+# Belt-and-suspenders for the files that MUST stay LF
+*.sh    text eol=lf
+*.py    text eol=lf
+*.yaml  text eol=lf
+*.yml   text eol=lf
+*.json  text eol=lf
+
+# Generated/binary - never diff, never convert
+*.pyc   binary
+*.png   binary
+*.pcap  binary
