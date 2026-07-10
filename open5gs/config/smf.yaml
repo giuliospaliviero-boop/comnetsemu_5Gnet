@@ -38,11 +38,11 @@ nrf:
 upf:
     pfcp:
       - addr: 192.168.0.112
-        dnn: internet     # Cloud UPF handles eMBB
-      - addr: 192.168.0.112
-        dnn: iot          # Cloud UPF handles mMTC
+        dnn: internet     # Cloud UPF --> eMBB
+      - addr: 192.168.0.114
+        dnn: iot          # IoT UPF --> mMTC
       - addr: 192.168.0.113
-        dnn: mec          # MEC UPF handles URLLC
+        dnn: mec          # MEC UPF --> URLLC
 
 #
 # parameter:

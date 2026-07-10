@@ -1,8 +1,18 @@
 UERANSIM v3.2.6
-[2026-04-16 09:39:30.546] [sctp] [info] Trying to establish SCTP connection... (192.168.0.111:38412)
-[2026-04-16 09:39:30.607] [sctp] [error] Connecting to 192.168.0.111:38412 failed. SCTP could not connect: Connection refused
-[2026-04-16 09:39:36.481] [rrc] [debug] UE[1] new signal detected
-[2026-04-16 09:39:37.362] [rrc] [debug] UE[2] new signal detected
-[2026-04-16 09:39:38.507] [rrc] [debug] UE[3] new signal detected
-[2026-04-16 09:39:39.855] [rrc] [debug] UE[4] new signal detected
-[2026-04-16 09:39:40.454] [rrc] [debug] UE[5] new signal detected
+[2026-07-09 16:32:18.130] [sctp] [info] Trying to establish SCTP connection... (192.168.0.111:38412)
+[2026-07-09 16:32:18.192] [sctp] [error] Connecting to 192.168.0.111:38412 failed. SCTP could not connect: Connection refused
+[2026-07-09 16:32:24.367] [rrc] [debug] UE[1] new signal detected
+[2026-07-09 16:32:25.899] [rrc] [debug] UE[2] new signal detected
+[2026-07-09 16:32:27.394] [rrc] [debug] UE[3] new signal detected
+[2026-07-09 16:32:28.593] [rrc] [debug] UE[4] new signal detected
+[2026-07-09 16:32:29.185] [rrc] [debug] UE[5] new signal detected
+[2026-07-09 16:37:55.580] [rls] [debug] UE[1] signal lost
+[2026-07-09 16:37:55.580] [rls] [debug] UE[2] signal lost
+[2026-07-09 16:37:55.580] [rls] [debug] UE[3] signal lost
+[2026-07-09 16:37:55.580] [rls] [debug] UE[4] signal lost
+[2026-07-09 16:40:43.753] [rls] [debug] UE[1] signal lost
+[2026-07-09 16:40:43.757] [rls] [debug] UE[2] signal lost
+[2026-07-09 16:40:43.757] [rls] [debug] UE[3] signal lost
+[2026-07-09 16:40:43.757] [rls] [debug] UE[4] signal lost
+[2026-07-09 16:40:43.757] [rls] [debug] UE[5] signal lost
+[2026-07-09 16:41:47.188] [rls] [debug] UE[1] signal lost

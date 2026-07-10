@@ -74,10 +74,9 @@ if __name__ == "__main__":
         "upf_cld",
         dimage="my5gc_v2-4-4",
         ip="192.168.0.112/24",
-        # dcmd="",
         dcmd="bash /open5gs/install/etc/open5gs/temp/5gc_up_init.sh",
         docker_args={
-            "environment": env,
+            "environment": {"COMPONENT_NAME": "upf_cld"},
             "volumes": {
                 prj_folder + "/log": {
                     "bind": "/open5gs/install/var/log/open5gs",
@@ -99,7 +98,7 @@ if __name__ == "__main__":
             "cap_add": ["NET_ADMIN"],
             "sysctls": {"net.ipv4.ip_forward": 1},
             "devices": "/dev/net/tun:/dev/net/tun:rwm"
-        }, 
+        },
     )
 
     info("*** Adding Twin Cloud UPF for IoT/QoS Testing\n")
@@ -107,8 +106,9 @@ if __name__ == "__main__":
         "upf_iot",
         dimage="my5gc_v2-4-4",
         ip="192.168.0.114/24",
+        dcmd="bash /open5gs/install/etc/open5gs/temp/5gc_up_init.sh",
         docker_args={
-            "environment": env,
+            "environment": {"COMPONENT_NAME": "upf_iot"},
             "volumes": {
                 prj_folder + "/log": {
                     "bind": "/open5gs/install/var/log/open5gs",
@@ -140,10 +140,9 @@ if __name__ == "__main__":
         "upf_mec",
         dimage="my5gc_v2-4-4",
         ip="192.168.0.113/24",
-        # dcmd="",
         dcmd="bash /open5gs/install/etc/open5gs/temp/5gc_up_init.sh",
         docker_args={
-            "environment": env,
+            "environment": {"COMPONENT_NAME": "upf_mec"},
             "volumes": {
                 prj_folder + "/log": {
                     "bind": "/open5gs/install/var/log/open5gs",
@@ -171,12 +170,12 @@ if __name__ == "__main__":
     info("*** Adding gNB 1\n")
     env["COMPONENT_NAME"]="gnb1"
     gnb1 = net.addDockerHost(
-        "gnb1", 
+        "gnb1",
         dimage="myueransim_v3-2-6",
         ip="192.168.0.131/24",
-        dcmd="bash -c 'sleep 20 && ./nr-gnb -c /mnt/ueransim/open5gs-gnb1.yaml > /mnt/log/gnb1.log 2>&1'",
+        #dcmd="bash -c 'sleep 20 && ./nr-gnb -c /mnt/ueransim/open5gs-gnb1.yaml > /mnt/log/gnb1.log 2>&1'",
         docker_args={
-            "environment": env,
+            "environment": {"COMPONENT_NAME": "gnb1"},
             "volumes": {
                 prj_folder + "/ueransim/config": { "bind": "/mnt/ueransim", "mode": "rw" },
                 prj_folder + "/log": { "bind": "/mnt/log", "mode": "rw" },
@@ -194,9 +193,9 @@ if __name__ == "__main__":
         "gnb2",
         dimage="myueransim_v3-2-6",
         ip="192.168.0.132/24",
-        dcmd="bash -c 'sleep 20 && ./nr-gnb -c /mnt/ueransim/open5gs-gnb2.yaml > /mnt/log/gnb2.log 2>&1'",
+        #dcmd="bash -c 'sleep 20 && ./nr-gnb -c /mnt/ueransim/open5gs-gnb2.yaml > /mnt/log/gnb2.log 2>&1'",
         docker_args={
-            "environment": env,
+            "environment": {"COMPONENT_NAME": "gnb2"},
             "volumes": {
                 prj_folder + "/ueransim/config": {"bind": "/mnt/ueransim", "mode": "rw"},
                 prj_folder + "/log": {"bind": "/mnt/log", "mode": "rw"},
@@ -221,7 +220,7 @@ if __name__ == "__main__":
             ue_name,
             dimage="myueransim_v3-2-6",
             ip=ue_ip,
-            dcmd=f"bash -c 'sleep 25 && ./nr-ue -c /mnt/ueransim/{yaml_name} > /mnt/log/{ue_name}.log 2>&1'",
+            #dcmd=f"bash -c 'sleep 25 && ./nr-ue -c /mnt/ueransim/{yaml_name} > /mnt/log/{ue_name}.log 2>&1'",
             docker_args={
                 "environment": env,
                 "volumes": {
@@ -282,13 +281,13 @@ if __name__ == "__main__":
     info("*** Adding links\n")
     # Access to Edge (MEC) - Ultra Low Latency (2ms)
     net.addLink(s1, s2, bw=1000, delay="2ms", intfName1="s1-s2", intfName2="s2-s1")
-    
+
     # Edge to Cloud - High Latency (40ms), Lower Bandwidth (100Mbps bottleneck)
     net.addLink(s2, s3, bw=100, delay="40ms", intfName1="s2-s3", intfName2="s3-s2")
 
     # Edge to Cloud (TWIN for IoT/QoS testing) - High Latency (40ms), Standard Bandwidth
     net.addLink(s2, s4, bw=1000, delay="40ms", intfName1="s2-s4", intfName2="s4-s2")
-    
+
     # Connected Control Plane to Edge tier (s2) --> faster signaling
     net.addLink(cp, s2, bw=1000, delay="1ms", intfName1="cp-s2", intfName2="s2-cp")
 
@@ -372,6 +371,34 @@ if __name__ == "__main__":
     info("\n*** Starting network\n")
     net.start()
 
+    info("*** Waiting for AMF NGAP listener\n")
+    while "38412" not in cp.cmd("cat /proc/net/sctp/eps"):
+        time.sleep(1)
+
+    info("*** Starting gNBs\n")
+    for name, yaml in (("gnb1", "open5gs-gnb1.yaml"), ("gnb2", "open5gs-gnb2.yaml")):
+        g = net.get(name)
+        g.cmd(f"/UERANSIM/build/nr-gnb -c /mnt/ueransim/{yaml} > /mnt/log/{name}.log 2>&1 &")
+    for name in ("gnb1", "gnb2"):
+        while "successful" not in net.get(name).cmd(
+                f"grep -s 'NG Setup procedure is successful' /mnt/log/{name}.log; true"):
+            time.sleep(1)
+    print("*** Both gNBs registered with AMF")
+
+    info("*** Starting UEs\n")
+    DNN_SUBNET = {1: "10.45.0.0/16", 2: "10.45.0.0/16", 7: "10.45.0.0/16", 8: "10.45.0.0/16",
+                  3: "10.46.0.0/16", 4: "10.46.0.0/16", 9: "10.46.0.0/16", 10: "10.46.0.0/16",
+                  5: "10.47.0.0/16", 6: "10.47.0.0/16"}
+    for i, ue in enumerate(ue_nodes, 1):
+        ue.cmd(f"/UERANSIM/build/nr-ue -c /mnt/ueransim/open5gs-ue{i}.yaml > /mnt/log/ue{i}.log 2>&1 &")
+    for i, ue in enumerate(ue_nodes, 1):
+        while "inet" not in ue.cmd("ip -4 addr show uesimtun0 2>/dev/null"):
+            time.sleep(1)
+
+        # route this UE's DN subnet through its PDU session
+        ue.cmd(f"ip route replace {DNN_SUBNET[i]} dev uesimtun0")
+        print(f"    ue{i}: PDU session up")
+
     # *** 5G Core - AMBR Policies for mMTC devices ***
     s1 = net.get('s1')
     ue5 = net.get('ue5')
@@ -424,7 +451,6 @@ if __name__ == "__main__":
             break
         else:
             print("\nINVALID CHOICE! Try again.")
-                
 
     #if not AUTOTEST_MODE:
         # spawnXtermDocker("open5gs")

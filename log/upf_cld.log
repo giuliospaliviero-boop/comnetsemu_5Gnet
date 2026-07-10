@@ -196,3 +196,25 @@ Open5GS daemon v2.4.4
 04/16 09:39:24.112: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
 04/16 09:39:24.112: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
 04/16 09:39:24.113: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+07/09 16:15:08.608: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+07/09 16:15:08.608: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+07/09 16:15:08.625: [sock] ERROR: socket bind(2) [192.168.0.112]:8805 failed (99:Cannot assign requested address) (../lib/core/ogs-socket.c:109)
+07/09 16:15:08.625: [sock] ERROR: udp_server() [192.168.0.112]:8805 failed (99:Cannot assign requested address) (../lib/core/ogs-udp.c:62)
+07/09 16:15:08.625: [app] ERROR: Failed to intialize UPF (../src/upf/app.c:28)
+07/09 16:15:08.625: [app] FATAL: Open5GS initialization failed. Aborted (../src/main.c:219)
+Open5GS daemon v2.4.4
+
+07/09 16:16:03.061: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+07/09 16:16:03.061: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+07/09 16:16:03.097: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+07/09 16:16:03.097: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+07/09 16:16:03.098: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
+Open5GS daemon v2.4.4
+
+07/09 16:32:11.070: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/upf.yaml' (../lib/app/ogs-init.c:129)
+07/09 16:32:11.070: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/upf_cld.log' (../lib/app/ogs-init.c:132)
+07/09 16:32:11.134: [pfcp] INFO: pfcp_server() [192.168.0.112]:8805 (../lib/pfcp/path.c:30)
+07/09 16:32:11.134: [gtp] INFO: gtp_server() [192.168.0.112]:2152 (../lib/gtp/path.c:30)
+07/09 16:32:11.135: [app] INFO: UPF initialize...done (../src/upf/app.c:31)
