@@ -229,6 +229,8 @@ if __name__ == "__main__":
                     "/dev": {"bind": "/dev", "mode": "rw"},
                 },
                 "cap_add": ["NET_ADMIN"],
+                "cpu_period": 100000,
+                "cpu_quota": 40000,
                 "devices": "/dev/net/tun:/dev/net/tun:rwm"
             },
         )
@@ -249,9 +251,8 @@ if __name__ == "__main__":
     # Access to Edge (MEC) - Ultra Low Latency (2ms)
     net.addLink(s1, s2, delay="2ms", intfName1="s1-s2", intfName2="s2-s1")
 
-    # Edge to Cloud - bottleneck: 50 Mbps, 40 ms, buffer approx. 1x BDP
-    # BDP = 50 Mbps x 88 ms RTT is approx. 0.55 MB, so roughly 370 full-size packets
-    net.addLink(s2, s3, bw=50, delay="40ms", max_queue_size=370, 
+    # Edge to Cloud - bottleneck: 100 Mbps, 40 ms, buffer approx. 1x BDP
+    net.addLink(s2, s3, bw=100, delay="40ms", max_queue_size=700, 
                 intfName1="s2-s3", intfName2="s3-s2")
 
     # Edge to IoT Cloud (twin path, uncongested reference) - High Latency (40ms)
@@ -284,7 +285,7 @@ if __name__ == "__main__":
     with open(prj_folder + path_subscriber_json, 'r') as f:
         base_profile = json.load(f)
 
-    # Define the configurations for our 10 UEs
+    # Define the configurations for 10 UEs
     ue_configs = [
         {"imsi": "001010000000001", "sst": 1, "dnn": "internet", "bw": 100}, # UE1 eMBB
         {"imsi": "001010000000002", "sst": 1, "dnn": "internet", "bw": 100}, # UE2 eMBB
@@ -398,11 +399,12 @@ if __name__ == "__main__":
     print("*** Both gNBs registered with AMF")
 
     info("*** Starting UEs\n")
-    DNN_SUBNET = {1: "10.45.0.0/16", 2: "10.45.0.0/16", 7: "10.45.0.0/16", 8: "10.45.0.0/16",
-                  3: "10.46.0.0/16", 4: "10.46.0.0/16", 9: "10.46.0.0/16", 10: "10.46.0.0/16",
+    DNN_SUBNET = {1: "10.45.0.0/16", 2: "10.45.0.0/16",
+                  3: "10.46.0.0/16", 4: "10.46.0.0/16",
                   5: "10.47.0.0/16", 6: "10.47.0.0/16"}
     for i, ue in enumerate(ue_nodes, 1):
         ue.cmd(f"/UERANSIM/build/nr-ue -c /mnt/ueransim/open5gs-ue{i}.yaml > /mnt/log/ue{i}.log 2>&1 &")
+        time.sleep(2)
     for i, ue in enumerate(ue_nodes, 1):
         while "inet" not in ue.cmd("ip -4 addr show uesimtun0 2>/dev/null"):
             time.sleep(1)
@@ -423,8 +425,8 @@ if __name__ == "__main__":
 #                h.cmd(f"ethtool -K {intf.name} tso off gso off gro off 2>/dev/null")
 
     info("*** Warming up tunnel paths\n")
-    DN_GW = {1: "10.45.0.1", 2: "10.45.0.1", 7: "10.45.0.1", 8: "10.45.0.1",
-             3: "10.46.0.1", 4: "10.46.0.1", 9: "10.46.0.1", 10: "10.46.0.1",
+    DN_GW = {1: "10.45.0.1", 2: "10.45.0.1",
+             3: "10.46.0.1", 4: "10.46.0.1",
              5: "10.47.0.1", 6: "10.47.0.1"}
     for i, ue in enumerate(ue_nodes, 1):
         ue.cmd(f"ping -c 1 -W 1 {DN_GW[i]} > /dev/null 2>&1")
@@ -437,8 +439,8 @@ if __name__ == "__main__":
     s1_ue5_port = s1.connectionsTo(ue5)[0][0].name
     s1_ue6_port = s1.connectionsTo(ue6)[0][0].name
 
-    #interface_ue5 = ue5.defaultIntf().name
-    #interface_ue6 = ue6.defaultIntf().name
+    interface_ue5 = ue5.defaultIntf().name
+    interface_ue6 = ue6.defaultIntf().name
 
     s1.cmd(f"ovs-vsctl set interface {s1_ue5_port} ingress_policing_rate=5000")
     s1.cmd(f"ovs-vsctl set interface {s1_ue5_port} ingress_policing_burst=1000")
@@ -446,11 +448,11 @@ if __name__ == "__main__":
     s1.cmd(f"ovs-vsctl set interface {s1_ue6_port} ingress_policing_rate=5000")
     s1.cmd(f"ovs-vsctl set interface {s1_ue6_port} ingress_policing_burst=1000")
 
-    #ue5.cmd(f"tc qdisc del dev {interface_ue5} root 2>/dev/null")
-    #ue5.cmd(f"tc qdisc add dev {interface_ue5} root tbf rate 5mbit burst 32kbit latency 20ms")
+    ue5.cmd(f"tc qdisc del dev {interface_ue5} root 2>/dev/null")
+    ue5.cmd(f"tc qdisc add dev {interface_ue5} root tbf rate 5mbit burst 32kbit latency 20ms")
 
-    #ue6.cmd(f"tc qdisc del dev {interface_ue6} root 2>/dev/null")
-    #ue6.cmd(f"tc qdisc add dev {interface_ue6} root tbf rate 5mbit burst 32kbit latency 20ms")
+    ue6.cmd(f"tc qdisc del dev {interface_ue6} root 2>/dev/null")
+    ue6.cmd(f"tc qdisc add dev {interface_ue6} root tbf rate 5mbit burst 32kbit latency 20ms")
 
     #if not AUTOTEST_MODE:
     #    print("\n*** Network successfully started! ***\n")

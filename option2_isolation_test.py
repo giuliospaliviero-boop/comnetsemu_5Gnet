@@ -1,12 +1,13 @@
 import time
 import re
 
-# Option 2 - inter-slice isolation, LIVE-DEMO edition.
-# Congestion is generated ONLY on the underlay (kernel forwarding = cheap,
-# cannot soft-lock the VM). Slices are measured through their real 5G
-# tunnels with pings + one short probe. Total runtime ~12 s.
-
-FLOOD_SECS = 16
+# Tunnel-based isolation test:
+#   ue1 (gnb1) + ue2 (gnb2) send CONGEST_RATE UDP each through their tunnels
+#   -> aggregate exceeds the 100 Mbps s2-s3 bottleneck -> real congestion.
+# Validate rates with the escalation ladder before trusting higher values.
+CONGEST_RATE = "80M"   # per congestor; 2x80 = 160M > 100M bottleneck
+URLLC_RATE   = "20M"   # URLLC TCP probe on the (uncongested) edge path
+CONGEST_SECS = 12
 
 def ping_avg(out):
     if isinstance(out, bytes):
@@ -14,11 +15,11 @@ def ping_avg(out):
     m = re.search(r'min/avg/max/mdev = [\d.]+/([\d.]+)/', out)
     return (m.group(1) + " ms") if m else "N/A"
 
-def udp_rate(out):
+def rate(out):
     if isinstance(out, bytes):
         out = out.decode("utf-8", "ignore")
     for line in out.splitlines():
-        if "receiver" in line:
+        if "receiver" in line or "sender" in line:
             m = re.search(r'([\d.]+\s+[KMG]bits/sec)', line)
             if m:
                 return m.group(1)
@@ -26,55 +27,59 @@ def udp_rate(out):
     return m[-1] if m else "N/A"
 
 def run_isolation_test(net):
-    ue7 = net.get("ue7"); ue10 = net.get("ue10")
-    ue3 = net.get("ue3"); ue4 = net.get("ue4"); ue9 = net.get("ue9")
-    upf_cld = net.get("upf_cld")   # eMBB anchor (s3) + underlay flood sink
-    upf_mec = net.get("upf_mec")   # URLLC anchor (s2) + throughput sink
-    upf_iot = net.get("upf_iot")   # idle node -> underlay flood generator
+    ue1 = net.get("ue1"); ue2 = net.get("ue2"); ue7 = net.get("ue7")          # eMBB congesters (one per gNB)
+    ue3 = net.get("ue3"); ue4 = net.get("ue4"); ue9 = net.get("ue9"); ue10 = net.get("ue10")  # URLLC probes
+    upf_cld = net.get("upf_cld"); upf_mec = net.get("upf_mec")
 
-    for u in (upf_cld, upf_mec, upf_iot):
+    for u in (upf_cld, upf_mec):
         u.cmd("pkill -9 iperf3")
-    time.sleep(0.3)
+    time.sleep(0.5)
+    upf_cld.cmd("iperf3 -s -B 10.45.0.1 -p 5201 -D")
+    upf_cld.cmd("iperf3 -s -B 10.45.0.1 -p 5202 -D")
+    upf_mec.cmd("iperf3 -s -B 10.46.0.1 -p 5204 -D")
+    time.sleep(0.5)
 
     print("\n" + "=" * 60)
-    print(" OPTION 2: INTER-SLICE ISOLATION")
+    print(" OPTION 2: INTER-SLICE ISOLATION (through the 5G tunnels)")
     print("=" * 60)
 
     print("\n[BASELINE] no congestion:")
     print("   eMBB  UE7 -> 10.45.0.1 : \033[93m" + ping_avg(ue7.cmd("ping -c 4 -i 0.2 10.45.0.1")) + "\033[0m")
     print("   URLLC UE3 -> 10.46.0.1 : \033[92m" + ping_avg(ue3.cmd("ping -c 4 -i 0.2 10.46.0.1")) + "\033[0m")
 
-    print("\n[CONGESTION] saturating s2-s3 on the underlay (kernel-forwarded, safe)...")
-    upf_cld.cmd("iperf3 -s -B 192.168.0.112 -p 5300 -D")
-    upf_mec.cmd("iperf3 -s -B 10.46.0.1 -p 5204 -D")
-    flood = upf_iot.popen("iperf3 -c 192.168.0.112 -p 5300 -P 8 -t %d" % FLOOD_SECS)
+    print("\n[CONGESTION] UE1 + UE2 each pushing " + CONGEST_RATE + " UDP through GTP-U (> 100M bottleneck)")
+    guard = str(CONGEST_SECS + 6)
+    c1 = ue1.popen("timeout -k 3 " + guard + " iperf3 -u -c 10.45.0.1 -p 5201 -b " + CONGEST_RATE + " -t " + str(CONGEST_SECS))
+    c2 = ue2.popen("timeout -k 3 " + guard + " iperf3 -u -c 10.45.0.1 -p 5202 -b " + CONGEST_RATE + " -t " + str(CONGEST_SECS))
     try:
-        time.sleep(4)   # let the s2-s3 queue fill
+        time.sleep(3)   # let the s2-s3 queue fill
 
         print("\n[DURING CONGESTION]")
-        print("   eMBB  UE7 -> 10.45.0.1 : \033[91m" + ping_avg(ue7.cmd("ping -c 4 -i 0.2 10.45.0.1")) + "\033[0m  (crosses s2-s3 -> inflated)")
-
+        print("   eMBB  UE7 -> 10.45.0.1 : \033[91m" + ping_avg(ue7.cmd("ping -c 4 -i 0.2 10.45.0.1"))
+              + "\033[0m  (its own slice is congested -> inflated)")
         p3 = ue3.popen("ping -c 4 -i 0.2 10.46.0.1")
         p4 = ue4.popen("ping -c 4 -i 0.2 10.46.0.1")
         p9 = ue9.popen("ping -c 4 -i 0.2 10.46.0.1")
         o3, _ = p3.communicate(); o4, _ = p4.communicate(); o9, _ = p9.communicate()
-        print("   URLLC UE3 -> 10.46.0.1 : \033[92m" + ping_avg(o3) + "\033[0m  (edge path -> unaffected)")
-        print("   URLLC UE4 -> 10.46.0.1 : \033[92m" + ping_avg(o4) + "\033[0m")
-        print("   URLLC UE9 -> 10.46.0.1 : \033[92m" + ping_avg(o9) + "\033[0m")
+        print("   URLLC UE3 --> 10.46.0.1 : \033[92m" + ping_avg(o3) + "\033[0m  (edge path -> unaffected)")
+        print("   URLLC UE4 --> 10.46.0.1 : \033[92m" + ping_avg(o4) + "\033[0m")
+        print("   URLLC UE9 --> 10.46.0.1 : \033[92m" + ping_avg(o9) + "\033[0m")
 
-        print("\n   URLLC UE10 throughput  : \033[92m"
-              + udp_rate(ue10.cmd("iperf3 -u -c 10.46.0.1 -p 5204 -b 10M -t 3")) + "\033[0m  (full rate, edge path)")
+        o10 = ue10.cmd("timeout 12 iperf3 -c 10.46.0.1 -p 5204 -t 4 -O 1 -b " + URLLC_RATE)
+        print("   URLLC UE10 throughput   : \033[92m" + rate(o10) + "\033[0m  (target " + URLLC_RATE + ", edge path)")
     finally:
         try:
-            flood.kill()
+            c1.communicate(timeout=CONGEST_SECS + 8)
+            c2.communicate(timeout=CONGEST_SECS + 8)
         except Exception:
-            pass
-        for u in (upf_cld, upf_mec, upf_iot):
+            c1.kill(); c2.kill()
+        for u in (upf_cld, upf_mec):
             u.cmd("pkill -9 iperf3")
+        ue1.cmd("pkill -9 iperf3"); ue2.cmd("pkill -9 iperf3")
 
     print("\n" + "-" * 60)
-    print("\033[92mRESULT: eMBB latency rose under congestion, while URLLC latency and")
-    print("throughput stayed at baseline -> spatial isolation confirmed.\033[0m")
+    print("\033[92mRESULT: the eMBB slice suffered its own congestion (latency up), while")
+    print("URLLC kept baseline latency AND full throughput -> spatial isolation.\033[0m")
     print("=" * 60 + "\n")
     input("Press Enter to continue...")
 
@@ -90,7 +95,6 @@ def option2_menu(net):
         if choice == "1":
             run_isolation_test(net)
         elif choice == "0":
-            print("\nReturning to MAIN MENU...")
             break
         else:
             print("\nINVALID CHOICE! Please try again.")

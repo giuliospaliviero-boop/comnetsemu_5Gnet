@@ -437,3 +437,15 @@ Open5GS daemon v2.4.4
 07/10 18:15:23.961: [nssf] WARNING: [338ea2b6-7c7f-41f1-a053-55615f8fc0e2] Retry to registration with NRF (../src/nssf/nf-sm.c:369)
 07/10 18:15:23.963: [nssf] INFO: [338ea2b6-7c7f-41f1-a053-55615f8fc0e2] NF registred [Heartbeat:10s] (../src/nssf/nf-sm.c:198)
 07/10 18:20:57.981: [app] INFO: SIGHUP received (../src/main.c:58)
+Open5GS daemon v2.4.4
+
+07/10 18:53:47.326: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/nssf.yaml' (../lib/app/ogs-init.c:129)
+07/10 18:53:47.326: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/nssf.log' (../lib/app/ogs-init.c:132)
+07/10 18:53:47.333: [sbi] INFO: nghttp2_server() [127.0.0.14]:7777 (../lib/sbi/nghttp2-server.c:144)
+07/10 18:53:47.340: [app] INFO: NSSF initialize...done (../src/nssf/app.c:31)
+07/10 18:53:47.353: [nssf] INFO: [aeb36600-7c90-41f1-ab86-dd5f198e9f6b] NF registred [Heartbeat:10s] (../src/nssf/nf-sm.c:198)
+07/10 18:56:38.836: [nssf] ERROR: [aeb36600-7c90-41f1-ab86-dd5f198e9f6b] No heartbeat (../src/nssf/nf-sm.c:281)
+07/10 18:56:38.836: [nssf] INFO: [aeb36600-7c90-41f1-ab86-dd5f198e9f6b] NF de-registered (../src/nssf/nf-sm.c:218)
+07/10 18:56:38.854: [nssf] ERROR: [aeb36600-7c90-41f1-ab86-dd5f198e9f6b] HTTP response error [404] (../src/nssf/nf-sm.c:135)
+07/10 18:56:39.161: [nssf] WARNING: [aeb36600-7c90-41f1-ab86-dd5f198e9f6b] Retry to registration with NRF (../src/nssf/nf-sm.c:369)
+07/10 18:56:39.161: [nssf] INFO: [aeb36600-7c90-41f1-ab86-dd5f198e9f6b] NF registred [Heartbeat:10s] (../src/nssf/nf-sm.c:198)

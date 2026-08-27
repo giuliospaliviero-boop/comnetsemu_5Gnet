@@ -4,9 +4,10 @@ export DB_URI="mongodb://localhost/open5gs"
 
 mongod --smallfiles --dbpath /var/lib/mongodb --logpath /open5gs/install/var/log/open5gs/mongodb.log --logRotate reopen --logappend --bind_ip_all &
 
-# WebUI: dev server - enable only when needed
+# WebUI: dev server - enable only if you need the GUI
 #sleep 10 && cd webui && npm run dev &
 
+# Wait until Mininet attaches the data-plane IP, or AMF/SMF crash at boot
 echo "Waiting for 192.168.0.111..."
 until ip -4 addr show | grep -q "192.168.0.111"; do sleep 1; done
 echo "Interface ready, starting NFs."

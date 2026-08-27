@@ -523,3 +523,18 @@ Open5GS daemon v2.4.4
 07/10 18:15:22.999: [udm] ERROR: [338fb822-7c7f-41f1-8310-f3a39585cf50] HTTP response error [404] (../src/udm/nf-sm.c:135)
 07/10 18:15:23.312: [udm] WARNING: [338fb822-7c7f-41f1-8310-f3a39585cf50] Retry to registration with NRF (../src/udm/nf-sm.c:373)
 07/10 18:15:23.326: [udm] INFO: [338fb822-7c7f-41f1-8310-f3a39585cf50] NF registred [Heartbeat:10s] (../src/udm/nf-sm.c:198)
+Open5GS daemon v2.4.4
+
+07/10 18:53:47.352: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/udm.yaml' (../lib/app/ogs-init.c:129)
+07/10 18:53:47.352: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/udm.log' (../lib/app/ogs-init.c:132)
+07/10 18:53:47.358: [sbi] INFO: nghttp2_server() [127.0.0.12]:7777 (../lib/sbi/nghttp2-server.c:144)
+07/10 18:53:47.365: [app] INFO: UDM initialize...done (../src/udm/app.c:31)
+07/10 18:53:47.369: [udm] INFO: [aeb6db1e-7c90-41f1-9808-fb7de1b2097c] NF registred [Heartbeat:10s] (../src/udm/nf-sm.c:198)
+07/10 18:53:49.251: [app] WARNING: Try to discover [UDR] (../lib/sbi/path.c:110)
+07/10 18:53:49.251: [udm] INFO: [aeb300a2-7c90-41f1-b1e4-7f22e98a5451] (NF-discover) NF registered (../src/udm/nnrf-handler.c:284)
+07/10 18:53:49.252: [udm] INFO: [aeb300a2-7c90-41f1-b1e4-7f22e98a5451] (NF-discover) NF Profile updated (../src/udm/nnrf-handler.c:330)
+07/10 18:56:38.839: [udm] ERROR: [aeb6db1e-7c90-41f1-9808-fb7de1b2097c] No heartbeat (../src/udm/nf-sm.c:285)
+07/10 18:56:38.839: [udm] INFO: [aeb6db1e-7c90-41f1-9808-fb7de1b2097c] NF de-registered (../src/udm/nf-sm.c:222)
+07/10 18:56:38.855: [udm] ERROR: [aeb6db1e-7c90-41f1-9808-fb7de1b2097c] HTTP response error [404] (../src/udm/nf-sm.c:135)
+07/10 18:56:39.157: [udm] WARNING: [aeb6db1e-7c90-41f1-9808-fb7de1b2097c] Retry to registration with NRF (../src/udm/nf-sm.c:373)
+07/10 18:56:39.159: [udm] INFO: [aeb6db1e-7c90-41f1-9808-fb7de1b2097c] NF registred [Heartbeat:10s] (../src/udm/nf-sm.c:198)

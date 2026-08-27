@@ -24,7 +24,7 @@ ip addr add "$TUN_NET" dev ogstun
 ip link set ogstun up
 iptables -t nat -A POSTROUTING -s "$TUN_NET" ! -o ogstun -j MASQUERADE
 
-# Wait fot the Mininet interface
+# Wait fot the Mininet interface before starting the UPF
 until ip -4 addr show | grep -q "$UPF_IP"; do sleep 1; done
 
 iperf3 -B "$TUN_IP" -s -fm &

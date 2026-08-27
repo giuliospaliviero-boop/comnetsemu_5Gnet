@@ -440,3 +440,15 @@ Open5GS daemon v2.4.4
 07/10 18:20:54.732: [bsf] WARNING: [33976374-7c7f-41f1-ba6b-d73c28d9d6e5] Retry to registration with NRF (../src/bsf/nf-sm.c:370)
 07/10 18:20:54.734: [bsf] INFO: [33976374-7c7f-41f1-ba6b-d73c28d9d6e5] NF registred [Heartbeat:10s] (../src/bsf/nf-sm.c:199)
 07/10 18:20:57.981: [app] INFO: SIGHUP received (../src/main.c:58)
+Open5GS daemon v2.4.4
+
+07/10 18:53:47.302: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/bsf.yaml' (../lib/app/ogs-init.c:129)
+07/10 18:53:47.302: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/bsf.log' (../lib/app/ogs-init.c:132)
+07/10 18:53:47.312: [sbi] INFO: nghttp2_server() [127.0.0.15]:7777 (../lib/sbi/nghttp2-server.c:144)
+07/10 18:53:47.324: [app] INFO: BSF initialize...done (../src/bsf/app.c:31)
+07/10 18:53:47.338: [bsf] INFO: [aeb036c4-7c90-41f1-8531-110ba337da4f] NF registred [Heartbeat:10s] (../src/bsf/nf-sm.c:199)
+07/10 18:56:38.847: [bsf] ERROR: [aeb036c4-7c90-41f1-8531-110ba337da4f] No heartbeat (../src/bsf/nf-sm.c:282)
+07/10 18:56:38.847: [bsf] INFO: [aeb036c4-7c90-41f1-8531-110ba337da4f] NF de-registered (../src/bsf/nf-sm.c:219)
+07/10 18:56:38.855: [bsf] ERROR: [aeb036c4-7c90-41f1-8531-110ba337da4f] HTTP Response Status Code [404] (../src/bsf/nf-sm.c:135)
+07/10 18:56:39.156: [bsf] WARNING: [aeb036c4-7c90-41f1-8531-110ba337da4f] Retry to registration with NRF (../src/bsf/nf-sm.c:370)
+07/10 18:56:39.158: [bsf] INFO: [aeb036c4-7c90-41f1-8531-110ba337da4f] NF registred [Heartbeat:10s] (../src/bsf/nf-sm.c:199)

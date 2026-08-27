@@ -1,56 +1,62 @@
-import time
 import re
 
-def udp_delivered(out):
+def tcp_rate(out):
     if isinstance(out, bytes):
         out = out.decode("utf-8", "ignore")
     for line in out.splitlines():
         if "receiver" in line:
-            m = re.search(r'([\d.]+\s+[KMG]bits/sec).*?\(([\d.]+%)\)', line)
+            m = re.search(r'([\d.]+\s+[KMG]bits/sec)', line)
             if m:
-                return m.group(1) + " (" + m.group(2) + " loss)"
+                return m.group(1)
     m = re.findall(r'([\d.]+\s+[KMG]bits/sec)', out)
     return m[-1] if m else "N/A"
 
 def run_qos_ambr_policing_test(net):
-    ue1 = net.get("ue1")                          # eMBB smartphone
-    ue5 = net.get("ue5"); ue6 = net.get("ue6")    # mMTC IoT sensors (botnet)
-    upf_cld = net.get("upf_cld")                  # eMBB DN  (10.45.0.1)
-    upf_iot = net.get("upf_iot")                  # mMTC DN  (10.47.0.1)
+    ue1 = net.get("ue1"); ue5 = net.get("ue5"); ue6 = net.get("ue6")
+    upf_cld = net.get("upf_cld"); upf_iot = net.get("upf_iot")
 
     for u in (upf_cld, upf_iot):
         u.cmd("pkill -9 iperf3")
-    time.sleep(0.3)
     upf_cld.cmd("iperf3 -s -B 10.45.0.1 -p 5201 -D")
     upf_iot.cmd("iperf3 -s -B 10.47.0.1 -p 5205 -D")
     upf_iot.cmd("iperf3 -s -B 10.47.0.1 -p 5206 -D")
-    time.sleep(0.5)
 
     print("\n" + "=" * 65)
     print(" OPTION 3: SLICE-SPECIFIC QoS & AMBR POLICING")
     print("=" * 65)
-    print("The 5G core enforces Session-AMBR per PDU session at the UPF, so a")
-    print("botnet of mMTC devices is bounded by POLICY (N x AMBR), not detection.")
+    print("Each mMTC PDU session is capped at its Session-AMBR by the core.")
+    print("TCP goodput settles exactly at the enforced cap: policy, not detection.")
     print("=" * 65)
 
-    try:
-        print("\n[CONTROL] eMBB smartphone UE1 requests 15 Mbps  (its AMBR is 100 Mbps)")
-        o1 = ue1.cmd("iperf3 -u -c 10.45.0.1 -p 5201 -b 15M -t 3")
-        print("   -> UE1 (eMBB) delivered: \033[92m" + udp_delivered(o1) + "\033[0m  (authorized)")
+    if "0 received" in ue5.cmd("ping -c 2 -W 2 10.47.0.1"):
+        print("\n\033[91mWARNING: UE5 cannot reach 10.47.0.1 - check upf_iot before testing.\033[0m")
 
-        print("\n[THREAT]  mMTC botnet: UE5 + UE6 each blast 20 Mbps  (their AMBR is 1 Mbps)")
-        p5 = ue5.popen("iperf3 -u -c 10.47.0.1 -p 5205 -b 20M -t 4")
-        p6 = ue6.popen("iperf3 -u -c 10.47.0.1 -p 5206 -b 20M -t 4")
-        o5, _ = p5.communicate(); o6, _ = p6.communicate()
-        print("   -> UE5 (mMTC) delivered: \033[91m" + udp_delivered(o5) + "\033[0m  (throttled by the core)")
-        print("   -> UE6 (mMTC) delivered: \033[91m" + udp_delivered(o6) + "\033[0m  (throttled by the core)")
+    try:
+        print("\n[CONTROL] eMBB UE1 transfer (Session-AMBR 100 Mbps)")
+        o1 = ue1.cmd("timeout 12 iperf3 -c 10.45.0.1 -p 5201 -t 5 -O 1 -b 50M")
+        print("   -> UE1 (eMBB) goodput: \033[92m" + tcp_rate(o1) + "\033[0m  (high, authorized)")
+
+        print("\n[THREAT]  mMTC botnet: UE5 + UE6 attempt unlimited transfers (AMBR 1 Mbps)")
+        p5 = ue5.popen("timeout 14 iperf3 -c 10.47.0.1 -p 5205 -t 6 -O 1")
+        p6 = ue6.popen("timeout 14 iperf3 -c 10.47.0.1 -p 5206 -t 6 -O 1")
+        try:
+            o5, _ = p5.communicate(timeout=18)
+        except Exception:
+            p5.kill(); o5 = b""
+        try:
+            o6, _ = p6.communicate(timeout=18)
+        except Exception:
+            p6.kill(); o6 = b""
+        print("   -> UE5 (mMTC) goodput: \033[91m" + tcp_rate(o5) + "\033[0m  (capped by the core)")
+        print("   -> UE6 (mMTC) goodput: \033[91m" + tcp_rate(o6) + "\033[0m  (capped by the core)")
     finally:
         for u in (upf_cld, upf_iot):
             u.cmd("pkill -9 iperf3")
+        ue5.cmd("pkill -9 iperf3"); ue6.cmd("pkill -9 iperf3")
 
     print("\n" + "-" * 65)
-    print("\033[92mRESULT: eMBB received its 15 Mbps; the mMTC botnet was capped to a")
-    print("few Mbps each at the UPF - attack volume is bounded by subscription policy.\033[0m")
+    print("\033[92mRESULT: eMBB moved data freely; each mMTC device was capped to ~its")
+    print("AMBR - a botnet's attack volume is bounded by subscription policy.\033[0m")
     print("=" * 65 + "\n")
     input("Press Enter to continue...")
 

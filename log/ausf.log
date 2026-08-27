@@ -506,3 +506,17 @@ Open5GS daemon v2.4.4
 07/10 18:20:54.732: [ausf] WARNING: [338b98e6-7c7f-41f1-8b8d-512a0c187796] Retry to registration with NRF (../src/ausf/nf-sm.c:373)
 07/10 18:20:54.734: [ausf] INFO: [338b98e6-7c7f-41f1-8b8d-512a0c187796] NF registred [Heartbeat:10s] (../src/ausf/nf-sm.c:198)
 07/10 18:20:57.981: [app] INFO: SIGHUP received (../src/main.c:58)
+Open5GS daemon v2.4.4
+
+07/10 18:53:47.298: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/ausf.yaml' (../lib/app/ogs-init.c:129)
+07/10 18:53:47.298: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/ausf.log' (../lib/app/ogs-init.c:132)
+07/10 18:53:47.298: [sbi] INFO: nghttp2_server() [127.0.0.11]:7777 (../lib/sbi/nghttp2-server.c:144)
+07/10 18:53:47.322: [app] INFO: AUSF initialize...done (../src/ausf/app.c:31)
+07/10 18:53:47.338: [ausf] INFO: [aeae440e-7c90-41f1-aced-0972122b7e57] NF registred [Heartbeat:10s] (../src/ausf/nf-sm.c:198)
+07/10 18:53:47.368: [ausf] INFO: [aeb6db1e-7c90-41f1-9808-fb7de1b2097c] (NRF-notify) NF registered (../src/ausf/nnrf-handler.c:179)
+07/10 18:53:47.368: [ausf] INFO: [aeb6db1e-7c90-41f1-9808-fb7de1b2097c] (NRF-notify) NF Profile updated (../src/ausf/nnrf-handler.c:198)
+07/10 18:56:38.831: [ausf] ERROR: [aeae440e-7c90-41f1-aced-0972122b7e57] No heartbeat (../src/ausf/nf-sm.c:285)
+07/10 18:56:38.831: [ausf] INFO: [aeae440e-7c90-41f1-aced-0972122b7e57] NF de-registered (../src/ausf/nf-sm.c:222)
+07/10 18:56:38.854: [ausf] ERROR: [aeae440e-7c90-41f1-aced-0972122b7e57] HTTP response error [404] (../src/ausf/nf-sm.c:135)
+07/10 18:56:39.155: [ausf] WARNING: [aeae440e-7c90-41f1-aced-0972122b7e57] Retry to registration with NRF (../src/ausf/nf-sm.c:373)
+07/10 18:56:39.158: [ausf] INFO: [aeae440e-7c90-41f1-aced-0972122b7e57] NF registred [Heartbeat:10s] (../src/ausf/nf-sm.c:198)

@@ -476,3 +476,16 @@ Open5GS daemon v2.4.4
 07/10 18:15:22.999: [udr] ERROR: [3391f2a4-7c7f-41f1-a991-d9ff590917ed] HTTP response error [404] (../src/udr/nf-sm.c:135)
 07/10 18:15:23.312: [udr] WARNING: [3391f2a4-7c7f-41f1-a991-d9ff590917ed] Retry to registration with NRF (../src/udr/nf-sm.c:369)
 07/10 18:15:23.355: [udr] INFO: [3391f2a4-7c7f-41f1-a991-d9ff590917ed] NF registred [Heartbeat:10s] (../src/udr/nf-sm.c:198)
+Open5GS daemon v2.4.4
+
+07/10 18:53:47.326: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/udr.yaml' (../lib/app/ogs-init.c:129)
+07/10 18:53:47.326: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/udr.log' (../lib/app/ogs-init.c:132)
+07/10 18:53:47.344: [dbi] INFO: MongoDB URI: 'mongodb://localhost/open5gs' (../lib/dbi/ogs-mongoc.c:130)
+07/10 18:53:47.344: [sbi] INFO: nghttp2_server() [127.0.0.20]:7777 (../lib/sbi/nghttp2-server.c:144)
+07/10 18:53:47.349: [app] INFO: UDR initialize...done (../src/udr/app.c:31)
+07/10 18:53:47.356: [udr] INFO: [aeb300a2-7c90-41f1-b1e4-7f22e98a5451] NF registred [Heartbeat:10s] (../src/udr/nf-sm.c:198)
+07/10 18:56:38.839: [udr] ERROR: [aeb300a2-7c90-41f1-b1e4-7f22e98a5451] No heartbeat (../src/udr/nf-sm.c:281)
+07/10 18:56:38.840: [udr] INFO: [aeb300a2-7c90-41f1-b1e4-7f22e98a5451] NF de-registered (../src/udr/nf-sm.c:218)
+07/10 18:56:38.854: [udr] ERROR: [aeb300a2-7c90-41f1-b1e4-7f22e98a5451] HTTP response error [404] (../src/udr/nf-sm.c:135)
+07/10 18:56:39.156: [udr] WARNING: [aeb300a2-7c90-41f1-b1e4-7f22e98a5451] Retry to registration with NRF (../src/udr/nf-sm.c:369)
+07/10 18:56:39.158: [udr] INFO: [aeb300a2-7c90-41f1-b1e4-7f22e98a5451] NF registred [Heartbeat:10s] (../src/udr/nf-sm.c:198)
