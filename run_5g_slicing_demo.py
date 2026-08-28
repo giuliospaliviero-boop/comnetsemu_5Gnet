@@ -406,12 +406,22 @@ if __name__ == "__main__":
         ue.cmd(f"/UERANSIM/build/nr-ue -c /mnt/ueransim/open5gs-ue{i}.yaml > /mnt/log/ue{i}.log 2>&1 &")
         time.sleep(2)
     for i, ue in enumerate(ue_nodes, 1):
-        while "inet" not in ue.cmd("ip -4 addr show uesimtun0 2>/dev/null"):
+        up = False
+        for attempt in range(40):
+            if "inet" in ue.cmd("ip -4 addr show uesimtun0 2>/dev/null"):
+                up = True
+                break
             time.sleep(1)
-
-        # route this UE's DN subnet through its PDU session
-        ue.cmd(f"ip route replace {DNN_SUBNET[i]} dev uesimtun0")
-        print(f"    ue{i}: PDU session up")
+            if attempt == 20:
+                print(f"    ue{i}: no session yet, restarting nr-ue...")
+                ue.cmd("pkill -9 nr-ue; sleep 1")
+                ue.cmd(f"/UERANSIM/build/nr-ue -c /mnt/ueransim/open5gs-ue{i}.yaml > /mnt/log/ue{i}.log 2>&1 &")
+        if up:
+            # route this UE's DN subnet through its PDU session
+            ue.cmd(f"ip route replace {DNN_SUBNET[i]} dev uesimtun0")
+            print(f"    ue{i}: PDU session up")
+        else:
+            print(f"    ue{i}: \033[91mWARNING: no PDU session after 40s - proceeding\033[0m")
 
 #    info("*** Disabling NIC offloads\n")
 #    for sw_name in ("s1", "s2", "s3", "s4"):

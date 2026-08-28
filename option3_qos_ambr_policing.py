@@ -33,7 +33,7 @@ def run_qos_ambr_policing_test(net):
 
     try:
         print("\n[CONTROL] eMBB UE1 transfer (Session-AMBR 100 Mbps)")
-        o1 = ue1.cmd("timeout 12 iperf3 -c 10.45.0.1 -p 5201 -t 5 -O 1 -b 50M")
+        o1 = ue1.cmd("timeout 12 iperf3 -u -c 10.45.0.1 -p 5201 -t 10 -b 60M")
         print("   -> UE1 (eMBB) goodput: \033[92m" + tcp_rate(o1) + "\033[0m  (high, authorized)")
 
         print("\n[THREAT]  mMTC botnet: UE5 + UE6 attempt unlimited transfers (AMBR 1 Mbps)")

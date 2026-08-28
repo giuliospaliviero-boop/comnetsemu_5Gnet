@@ -13,11 +13,13 @@ UE_INFO = {
     10: {"type": "URLLC", "upf_name": "Edge MEC UPF (DN 'mec')",   "target": "10.46.0.1", "expected": "~20 ms"},
 }
 
-def parse_ping_avg(out):
+def parse_ping(out):
     if isinstance(out, bytes):
         out = out.decode("utf-8", "ignore")
-    m = re.search(r'min/avg/max/mdev = [\d.]+/([\d.]+)/', out)
-    return (m.group(1) + " ms") if m else "N/A"
+    m = re.search(r'min/avg/max/mdev = ([\d.]+)/([\d.]+)/([\d.]+)/([\d.]+)', out)
+    if m:
+        return f"min {m.group(1)} / avg {m.group(2)} ms  (jitter {m.group(4)} ms)"
+    return "N/A"
 
 def run_single_test(net, ue_id):
     ue_info = UE_INFO[ue_id]
@@ -30,8 +32,9 @@ def run_single_test(net, ue_id):
           + " -> pinging " + ue_info["target"] + " over GTP-U")
     print("Expected RTT: " + ue_info["expected"])
 
-    output = ue_node.cmd("ping -c 6 " + ue_info["target"])
-    avg = parse_ping_avg(output)
+    ue_node.cmd("ping -c 1 -W 1 " + ue_info["target"] + " >/dev/null 2>&1")
+    output = ue_node.cmd("ping -c 20 -i 0.2 " + ue_info["target"])
+    avg = parse_ping(output)
     color = "92" if ue_info["type"] == "URLLC" else "93"
     label = "(Ultra-Low Latency Edge)" if ue_info["type"] == "URLLC" else "(Standard Cloud Latency)"
     print("-> Average Latency: \033[" + color + "m" + avg + "\033[0m " + label)

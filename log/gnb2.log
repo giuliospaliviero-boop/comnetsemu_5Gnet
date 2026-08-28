@@ -1,24 +1,32 @@
 UERANSIM v3.2.6
-[2026-07-10 18:53:48.184] [sctp] [info] Trying to establish SCTP connection... (192.168.0.111:38412)
-[2026-07-10 18:53:48.231] [sctp] [info] SCTP connection established (192.168.0.111:38412)
-[2026-07-10 18:53:48.232] [sctp] [debug] SCTP association setup ascId[4]
-[2026-07-10 18:53:48.232] [ngap] [debug] Sending NG Setup Request
-[2026-07-10 18:53:48.257] [ngap] [debug] NG Setup Response received
-[2026-07-10 18:53:48.257] [ngap] [info] NG Setup procedure is successful
-[2026-07-10 18:53:51.214] [rrc] [debug] UE[1] new signal detected
-[2026-07-10 18:53:51.226] [rrc] [info] RRC Setup for UE[1]
-[2026-07-10 18:53:51.234] [ngap] [debug] Initial NAS message received from UE[1]
-[2026-07-10 18:53:51.351] [ngap] [debug] Initial Context Setup Request received
-[2026-07-10 18:53:51.695] [ngap] [info] PDU session resource(s) setup for UE[1] count[1]
-[2026-07-10 18:53:55.222] [rrc] [debug] UE[2] new signal detected
-[2026-07-10 18:53:55.240] [rrc] [info] RRC Setup for UE[2]
-[2026-07-10 18:53:55.248] [ngap] [debug] Initial NAS message received from UE[2]
-[2026-07-10 18:53:55.349] [ngap] [debug] Initial Context Setup Request received
-[2026-07-10 18:53:55.590] [ngap] [info] PDU session resource(s) setup for UE[2] count[1]
-[2026-07-10 18:53:59.243] [rrc] [debug] UE[3] new signal detected
-[2026-07-10 18:53:59.254] [rrc] [info] RRC Setup for UE[3]
-[2026-07-10 18:53:59.262] [ngap] [debug] Initial NAS message received from UE[3]
-[2026-07-10 18:53:59.346] [ngap] [debug] Initial Context Setup Request received
-[2026-07-10 18:53:59.687] [ngap] [info] PDU session resource(s) setup for UE[3] count[1]
-[2026-07-10 18:56:38.839] [rls] [debug] UE[1] signal lost
-[2026-07-10 18:56:38.839] [rls] [debug] UE[3] signal lost
+[2026-08-28 12:54:26.805] [sctp] [info] Trying to establish SCTP connection... (192.168.0.111:38412)
+[2026-08-28 12:54:26.851] [sctp] [info] SCTP connection established (192.168.0.111:38412)
+[2026-08-28 12:54:26.851] [sctp] [debug] SCTP association setup ascId[55]
+[2026-08-28 12:54:26.852] [ngap] [debug] Sending NG Setup Request
+[2026-08-28 12:54:26.867] [ngap] [debug] NG Setup Response received
+[2026-08-28 12:54:26.867] [ngap] [info] NG Setup procedure is successful
+[2026-08-28 12:54:29.844] [rrc] [debug] UE[1] new signal detected
+[2026-08-28 12:54:29.855] [rrc] [info] RRC Setup for UE[1]
+[2026-08-28 12:54:29.864] [ngap] [debug] Initial NAS message received from UE[1]
+[2026-08-28 12:54:29.960] [ngap] [debug] Initial Context Setup Request received
+[2026-08-28 12:54:30.317] [ngap] [info] PDU session resource(s) setup for UE[1] count[1]
+[2026-08-28 12:54:33.859] [rrc] [debug] UE[2] new signal detected
+[2026-08-28 12:54:33.871] [rrc] [info] RRC Setup for UE[2]
+[2026-08-28 12:54:33.880] [ngap] [debug] Initial NAS message received from UE[2]
+[2026-08-28 12:54:33.973] [ngap] [debug] Initial Context Setup Request received
+[2026-08-28 12:54:34.221] [ngap] [info] PDU session resource(s) setup for UE[2] count[1]
+[2026-08-28 12:54:37.885] [rrc] [debug] UE[3] new signal detected
+[2026-08-28 12:54:43.899] [rrc] [debug] UE[4] new signal detected
+[2026-08-28 12:54:43.910] [rrc] [info] RRC Setup for UE[4]
+[2026-08-28 12:54:43.922] [ngap] [debug] Initial NAS message received from UE[4]
+[2026-08-28 12:54:44.105] [ngap] [debug] Initial Context Setup Request received
+[2026-08-28 12:54:44.355] [ngap] [info] PDU session resource(s) setup for UE[4] count[1]
+[2026-08-28 12:54:45.379] [rrc] [info] RRC Setup for UE[3]
+[2026-08-28 12:54:45.386] [ngap] [debug] Initial NAS message received from UE[3]
+[2026-08-28 12:54:45.483] [ngap] [debug] Initial Context Setup Request received
+[2026-08-28 12:54:45.838] [ngap] [info] PDU session resource(s) setup for UE[3] count[1]
+[2026-08-28 12:54:45.903] [rrc] [debug] UE[5] new signal detected
+[2026-08-28 12:54:46.819] [rrc] [info] RRC Setup for UE[5]
+[2026-08-28 12:54:46.826] [ngap] [debug] Initial NAS message received from UE[5]
+[2026-08-28 12:54:46.918] [ngap] [debug] Initial Context Setup Request received
+[2026-08-28 12:54:47.174] [ngap] [info] PDU session resource(s) setup for UE[5] count[1]
