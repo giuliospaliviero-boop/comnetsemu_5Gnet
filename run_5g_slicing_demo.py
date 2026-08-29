@@ -23,6 +23,7 @@ from python_modules.Open5GS import Open5GS
 from option1_latency_test import option1_menu
 from option2_isolation_test import option2_menu
 from option3_qos_ambr_policing import option3_menu
+from option4_resource_isolation import option4_menu
 
 # =============================================================================
 # CONFIGURATION - variables
@@ -152,9 +153,9 @@ def main_menu():
     print("\n\033[95m" + "=" * MENU_W)
     print("  5G NETWORK SLICING  -  MAIN MENU")
     print("=" * MENU_W + "\033[0m")
-    print("  [1] : Latency Test           per-UE RTT through 5G tunnel")
-    print("  [2] : Inter-slice isolation  eMBB congestion vs. URLLC")
-    print("  [3] : QoS / AMBR policing    mMTC IoT-DDoS mitigation")
+    print("  [1] : Latency Test")
+    print("  [2] : Inter-slice Performance Isolation (spatial)")
+    print("  [3] : Slice-Specific QoS / AMBR Policing")
     print("  [4] : Manual Mininet CLI")
     print("  [0] : Exit and stop the network")
     print("#" * MENU_W)

@@ -522,3 +522,24 @@ Open5GS daemon v2.4.4
 08/29 09:47:48.259: [sbi] INFO: nghttp2_server() [127.0.0.14]:7777 (../lib/sbi/nghttp2-server.c:144)
 08/29 09:47:48.260: [app] INFO: NSSF initialize...done (../src/nssf/app.c:31)
 08/29 09:47:48.264: [nssf] INFO: [b16d0cd2-a38e-41f1-abc4-af9fac03a6bb] NF registred [Heartbeat:10s] (../src/nssf/nf-sm.c:198)
+Open5GS daemon v2.4.4
+
+08/29 13:57:00.773: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/nssf.yaml' (../lib/app/ogs-init.c:129)
+08/29 13:57:00.773: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/nssf.log' (../lib/app/ogs-init.c:132)
+08/29 13:57:00.774: [sbi] INFO: nghttp2_server() [127.0.0.14]:7777 (../lib/sbi/nghttp2-server.c:144)
+08/29 13:57:00.777: [app] INFO: NSSF initialize...done (../src/nssf/app.c:31)
+08/29 13:57:00.778: [nssf] INFO: [81d1bd4c-a3b1-41f1-a9d7-c99a4f0c3fb0] NF registred [Heartbeat:10s] (../src/nssf/nf-sm.c:198)
+Open5GS daemon v2.4.4
+
+08/29 14:25:49.801: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/nssf.yaml' (../lib/app/ogs-init.c:129)
+08/29 14:25:49.801: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/nssf.log' (../lib/app/ogs-init.c:132)
+08/29 14:25:49.802: [sbi] INFO: nghttp2_server() [127.0.0.14]:7777 (../lib/sbi/nghttp2-server.c:144)
+08/29 14:25:49.803: [app] INFO: NSSF initialize...done (../src/nssf/app.c:31)
+08/29 14:25:49.803: [nssf] INFO: [88668030-a3b5-41f1-bb91-01a87605bf7a] NF registred [Heartbeat:10s] (../src/nssf/nf-sm.c:198)
+Open5GS daemon v2.4.4
+
+08/29 14:46:13.080: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/nssf.yaml' (../lib/app/ogs-init.c:129)
+08/29 14:46:13.080: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/nssf.log' (../lib/app/ogs-init.c:132)
+08/29 14:46:13.081: [sbi] INFO: nghttp2_server() [127.0.0.14]:7777 (../lib/sbi/nghttp2-server.c:144)
+08/29 14:46:13.082: [app] INFO: NSSF initialize...done (../src/nssf/app.c:31)
+08/29 14:46:13.084: [nssf] INFO: [618806b6-a3b8-41f1-b156-b7cff4cae42d] NF registred [Heartbeat:10s] (../src/nssf/nf-sm.c:198)
