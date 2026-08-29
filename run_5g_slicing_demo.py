@@ -1,292 +1,53 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+5G Network Slicing Demo
 
-import os
+Topology: 2 gNBs, 10 UEs across 3 slices (eMBB / URLLC / mMTC) on a distributed
+user plane (Cloud / Edge-MEC / IoT UPFs). A CLI menu drives 3 tests.
 
-from comnetsemu.cli import CLI, spawnXtermDocker
-from comnetsemu.net import Containernet, VNFManager
+Run with: sudo ./clean.sh && sudo python3 run_5g_slicing_demo.py 
+"""
+
+import json
+import time
+import copy
+
+from comnetsemu.cli import CLI
+from comnetsemu.net import Containernet
 from mininet.link import TCLink
 from mininet.log import info, setLogLevel
 from mininet.node import Controller
 
-from python_modules.Open5GS   import Open5GS
-
-import json, time
-import copy
-
+from python_modules.Open5GS import Open5GS
 from option1_latency_test import option1_menu
 from option2_isolation_test import option2_menu
 from option3_qos_ambr_policing import option3_menu
 
+# =============================================================================
+# CONFIGURATION - variables
+# =============================================================================
+PROJECT_FOLDER = "/home/comnetsemu/project_NET/comnetsemu_5Gnet"
+MONGODB_DIR = "/home/comnetsemu/mongodbdata"
+SUBSCRIBERS_JSON = PROJECT_FOLDER + "/python_modules/subscriber_profile.json"
 
-if __name__ == "__main__":
+IMAGE_OPEN5GS = "my5gc_v2-4-4"
+IMAGE_UERANSIM = "myueransim_v3-2-6"
+MONGO_ADDR = "172.17.0.2"
+MONGO_PORT = "27017"
 
-    setLogLevel("info")
+# Transport dimensioning on Mininet
+EDGE_DELAY = "2ms"    # s1 <--> s2 access to edge
+BACKHAUL_BW = 100     # Mbps, s2<-->s3 edge to cloud BOTTLENECK
+BACKHAUL_DELAY = "40ms"
+BACKHAUL_QLEN = 700   # packets = 1x BDP (100 Mbps x 88 ms RTT)
 
-    prj_folder="/home/comnetsemu/project_NET/comnetsemu_5Gnet"    # TO BE MODIFIED!
-    mongodb_folder="/home/comnetsemu/mongodbdata"
-    path_subscriber_json="/python_modules/subscriber_profile.json"
+# mMTC RAN-side rate limit (OVS ingress policing, to emulate UE-AMBR at the gNB)
+MMTC_POLICY_KBPS = 5000
+MMTC_POLICY_BURST = 1000
 
-    env = dict()
-
-    net = Containernet(controller=Controller, link=TCLink)
-
-    info("*** Adding Host for open5gs CP\n")
-    cp = net.addDockerHost(
-        "cp",
-        dimage="my5gc_v2-4-4",
-        ip="192.168.0.111/24",
-        # dcmd="",
-        dcmd="bash /open5gs/install/etc/open5gs/5gc_cp_init.sh",
-        docker_args={
-            "ports" : { "3000/tcp": 3000 },
-            "volumes": {
-                prj_folder + "/log": {
-                    "bind": "/open5gs/install/var/log/open5gs",
-                    "mode": "rw",
-                },
-                mongodb_folder: {
-                    "bind": "/var/lib/mongodb",
-                    "mode": "rw",
-                },
-                prj_folder + "/open5gs/config": {
-                    "bind": "/open5gs/install/etc/open5gs",
-                    "mode": "rw",
-                },
-                "/etc/timezone": {
-                    "bind": "/etc/timezone",
-                    "mode": "ro",
-                },
-                "/etc/localtime": {
-                    "bind": "/etc/localtime",
-                    "mode": "ro",
-                },
-            },
-        },
-    )
-
-
-    info("*** Adding Host for open5gs UPF\n")
-    env["COMPONENT_NAME"]="upf_cld"
-    upf_cld = net.addDockerHost(
-        "upf_cld",
-        dimage="my5gc_v2-4-4",
-        ip="192.168.0.112/24",
-        dcmd="bash /open5gs/install/etc/open5gs/temp/5gc_up_init.sh",
-        docker_args={
-            "environment": {"COMPONENT_NAME": "upf_cld"},
-            "volumes": {
-                prj_folder + "/log": {
-                    "bind": "/open5gs/install/var/log/open5gs",
-                    "mode": "rw",
-                },
-                prj_folder + "/open5gs/config": {
-                    "bind": "/open5gs/install/etc/open5gs/temp",
-                    "mode": "rw",
-                },
-                "/etc/timezone": {
-                    "bind": "/etc/timezone",
-                    "mode": "ro",
-                },
-                "/etc/localtime": {
-                    "bind": "/etc/localtime",
-                    "mode": "ro",
-                },
-            },
-            "cap_add": ["NET_ADMIN"],
-            "sysctls": {"net.ipv4.ip_forward": 1},
-            "devices": "/dev/net/tun:/dev/net/tun:rwm"
-        },
-    )
-
-    info("*** Adding Twin Cloud UPF for IoT/QoS Testing\n")
-    upf_iot = net.addDockerHost(
-        "upf_iot",
-        dimage="my5gc_v2-4-4",
-        ip="192.168.0.114/24",
-        dcmd="bash /open5gs/install/etc/open5gs/temp/5gc_up_init.sh",
-        docker_args={
-            "environment": {"COMPONENT_NAME": "upf_iot"},
-            "volumes": {
-                prj_folder + "/log": {
-                    "bind": "/open5gs/install/var/log/open5gs",
-                    "mode": "rw",
-                },
-                prj_folder + "/open5gs/config": {
-                    "bind": "/open5gs/install/etc/open5gs/temp",
-                    "mode": "rw",
-                },
-                "/etc/timezone": {
-                    "bind": "/etc/timezone",
-                    "mode": "ro",
-                },
-                "/etc/localtime": {
-                    "bind": "/etc/localtime",
-                    "mode": "ro",
-                },
-            },
-            "cap_add": ["NET_ADMIN"],
-            "sysctls": {"net.ipv4.ip_forward": 1},
-            "devices": "/dev/net/tun:/dev/net/tun:rwm"
-        },
-    )
-
-
-    info("*** Adding Host for open5gs UPF MEC\n")
-    env["COMPONENT_NAME"]="upf_mec"
-    upf_mec = net.addDockerHost(
-        "upf_mec",
-        dimage="my5gc_v2-4-4",
-        ip="192.168.0.113/24",
-        dcmd="bash /open5gs/install/etc/open5gs/temp/5gc_up_init.sh",
-        docker_args={
-            "environment": {"COMPONENT_NAME": "upf_mec"},
-            "volumes": {
-                prj_folder + "/log": {
-                    "bind": "/open5gs/install/var/log/open5gs",
-                    "mode": "rw",
-                },
-                prj_folder + "/open5gs/config": {
-                    "bind": "/open5gs/install/etc/open5gs/temp",
-                    "mode": "rw",
-                },
-                "/etc/timezone": {
-                    "bind": "/etc/timezone",
-                    "mode": "ro",
-                },
-                "/etc/localtime": {
-                    "bind": "/etc/localtime",
-                    "mode": "ro",
-                },
-            },
-            "cap_add": ["NET_ADMIN"],
-            "sysctls": {"net.ipv4.ip_forward": 1},
-            "devices": "/dev/net/tun:/dev/net/tun:rwm"
-        },
-    )
-
-    info("*** Adding gNB 1\n")
-    env["COMPONENT_NAME"]="gnb1"
-    gnb1 = net.addDockerHost(
-        "gnb1",
-        dimage="myueransim_v3-2-6",
-        ip="192.168.0.131/24",
-        #dcmd="bash -c 'sleep 20 && ./nr-gnb -c /mnt/ueransim/open5gs-gnb1.yaml > /mnt/log/gnb1.log 2>&1'",
-        docker_args={
-            "environment": {"COMPONENT_NAME": "gnb1"},
-            "volumes": {
-                prj_folder + "/ueransim/config": { "bind": "/mnt/ueransim", "mode": "rw" },
-                prj_folder + "/log": { "bind": "/mnt/log", "mode": "rw" },
-                "/etc/timezone": { "bind": "/etc/timezone", "mode": "ro" },
-                "/etc/localtime": { "bind": "/etc/localtime", "mode": "ro" },
-                "/dev": {"bind": "/dev", "mode": "rw"},
-            },
-            "cap_add": ["NET_ADMIN"],
-            "devices": "/dev/net/tun:/dev/net/tun:rwm"
-        },
-    )
-    info("*** Adding gNB 2\n")
-    env["COMPONENT_NAME"]="gnb2"
-    gnb2 = net.addDockerHost(
-        "gnb2",
-        dimage="myueransim_v3-2-6",
-        ip="192.168.0.132/24",
-        #dcmd="bash -c 'sleep 20 && ./nr-gnb -c /mnt/ueransim/open5gs-gnb2.yaml > /mnt/log/gnb2.log 2>&1'",
-        docker_args={
-            "environment": {"COMPONENT_NAME": "gnb2"},
-            "volumes": {
-                prj_folder + "/ueransim/config": {"bind": "/mnt/ueransim", "mode": "rw"},
-                prj_folder + "/log": {"bind": "/mnt/log", "mode": "rw"},
-                "/etc/timezone": {"bind": "/etc/timezone", "mode": "ro"},
-                "/etc/localtime": {"bind": "/etc/localtime", "mode": "ro"},
-                "/dev": {"bind": "/dev", "mode": "rw"},
-            },
-            "cap_add": ["NET_ADMIN"],
-            "devices": "/dev/net/tun:/dev/net/tun:rwm"
-        },
-    )
-
-    info("*** Adding 10 UEs\n")
-    ue_nodes = []
-    for i in range(1, 11):
-        ue_name = f"ue{i}"
-        ue_ip = f"192.168.0.{140 + i}/24"
-        yaml_name = f"open5gs-ue{i}.yaml"
-
-        env["COMPONENT_NAME"] = ue_name
-        ue = net.addDockerHost(
-            ue_name,
-            dimage="myueransim_v3-2-6",
-            ip=ue_ip,
-            #dcmd=f"bash -c 'sleep 25 && ./nr-ue -c /mnt/ueransim/{yaml_name} > /mnt/log/{ue_name}.log 2>&1'",
-            docker_args={
-                "environment": env,
-                "volumes": {
-                    prj_folder + "/ueransim/config": {"bind": "/mnt/ueransim", "mode": "rw"},
-                    prj_folder + "/log": {"bind": "/mnt/log", "mode": "rw"},
-                    "/etc/timezone": {"bind": "/etc/timezone", "mode": "ro"},
-                    "/etc/localtime": {"bind": "/etc/localtime", "mode": "ro"},
-                    "/dev": {"bind": "/dev", "mode": "rw"},
-                },
-                "cap_add": ["NET_ADMIN"],
-                "cpu_period": 100000,
-                "cpu_quota": 40000,
-                "devices": "/dev/net/tun:/dev/net/tun:rwm"
-            },
-        )
-        ue_nodes.append(ue)
-
-    info("*** Add controller\n")
-    net.addController("c0")
-
-    info("*** Adding switch\n")
-    s1 = net.addSwitch("s1")
-    s2 = net.addSwitch("s2")
-    s3 = net.addSwitch("s3")
-    s4 = net.addSwitch("s4")
-
-    info("*** Adding links\n")
-    # Shaping (HTB rate limiter) is applied only on the s2-s3 bottleneck
-
-    # Access to Edge (MEC) - Ultra Low Latency (2ms)
-    net.addLink(s1, s2, delay="2ms", intfName1="s1-s2", intfName2="s2-s1")
-
-    # Edge to Cloud - bottleneck: 100 Mbps, 40 ms, buffer approx. 1x BDP
-    net.addLink(s2, s3, bw=100, delay="40ms", max_queue_size=700, 
-                intfName1="s2-s3", intfName2="s3-s2")
-
-    # Edge to IoT Cloud (twin path, uncongested reference) - High Latency (40ms)
-    net.addLink(s2, s4, delay="40ms", intfName1="s2-s4", intfName2="s4-s2")
-
-    # Control Plane at the Edge tier (s2) --> fast signaling
-    net.addLink(cp, s2, delay="1ms", intfName1="cp-s2", intfName2="s2-cp")
-
-    # UPF attachments
-    net.addLink(upf_cld, s3, delay="1ms", intfName1="upf-s3", intfName2="s3-upf_cld")
-    net.addLink(upf_iot, s4, delay="1ms", intfName1="upf_iot-s4", intfName2="s4-upf_iot")
-    net.addLink(upf_mec, s2, delay="1ms", intfName1="upf_mec-s2", intfName2="s2-upf_mec")
-
-    # RAN attachments
-    net.addLink(gnb1, s1, delay="1ms", intfName1="gnb1-s1", intfName2="s1-gnb1")
-    net.addLink(gnb2, s1, delay="1ms", intfName1="gnb2-s1", intfName2="s1-gnb2")
-
-    # UEs
-    for i, ue_node in enumerate(ue_nodes):
-        ue_index = i + 1
-        net.addLink(ue_node, s1, delay="1ms", 
-                    intfName1=f"ue{ue_index}-s1", intfName2=f"s1-ue{ue_index}")
-
-
-    print("*** Open5GS: Init subscribers for 10 UEs (Slicing)")
-    o5gs = Open5GS("172.17.0.2", "27017")
-    o5gs.removeAllSubscribers()
-
-    # Load your existing JSON as a base template just for the static fields like security, etc.
-    with open(prj_folder + path_subscriber_json, 'r') as f:
-        base_profile = json.load(f)
-
-    # Define the configurations for 10 UEs
-    ue_configs = [
+# Per-slice subscribers:  SST 1 = eMBB (Cloud), 2 = URLLC (Edge), 3 = mMTC (IoT)
+UE_CONFIGS = [
         {"imsi": "001010000000001", "sst": 1, "dnn": "internet", "bw": 100}, # UE1 eMBB
         {"imsi": "001010000000002", "sst": 1, "dnn": "internet", "bw": 100}, # UE2 eMBB
         {"imsi": "001010000000003", "sst": 2, "dnn": "mec",      "bw": 20},  # UE3 URLLC
@@ -299,113 +60,196 @@ if __name__ == "__main__":
         {"imsi": "001010000000010", "sst": 2, "dnn": "mec",      "bw": 20},  # UE10 URLLC
     ]
 
-    # Per-slice QoS profile:
-    # - eMBB : 5QI 9  (priority 90, PDB 300 ms)
-    # - URLLC: 5QI 80 (low-latency, priority 68, PDB 10 ms)
-    #          ARP: highest priority (2)
-    # - mMTC : 5QI 9  (lowest ARP priority, delay-tolerant)
-    SLICE_QOS = {
-        1: {"index": 9, "arp_pl": 8, "cap": 1, "vuln": 2},   # eMBB
-        2: {"index": 80, "arp_pl": 2, "cap": 2, "vuln": 1},  # URLLC
-        3: {"index": 9, "arp_pl": 14, "cap": 1, "vuln": 2},  # mMTC
+# Per-slice QoS
+SLICE_QOS = {
+        1: {"index": 9, "arp_pl": 8, "cap": 1, "vuln": 2},   # eMBB : 5QI 9  non-GBR
+        2: {"index": 80, "arp_pl": 2, "cap": 2, "vuln": 1},  # URLLC: 5QI 80 low-latency
+        3: {"index": 9, "arp_pl": 14, "cap": 1, "vuln": 2},  # mMTC : 5QI 9  delay-tolerant
     }
 
-#    for config in ue_configs:
-        # Create a deep copy of the base profile so we don't overwrite it
-#        profile = copy.deepcopy(base_profile)
+# Slice (SST) --> Data network
+SLICE_DN = {
+    1: ("10.45.0.1", "10.45.0.0/16"),  # eMBB --> Cloud UPF (.112)
+    2: ("10.46.0.1", "10.46.0.0/16"),  # URLLC --> Edge MEC UPF (.113)
+    3: ("10.47.0.1", "10.47.0.0/16"),  # mMTC --> IoT UPF (.114)
+}
+MENU_W = 60
 
-#        profile["imsi"] = config["imsi"]
-
-#        profile["ambr"] = {
-#            "uplink": {"value": 200, "unit": 2},    # unit 2 = Mbps
-#            "downlink": {"value": 200, "unit": 2},
-#        }
-
-#        profile["slice"] = [{
-#            "sst": config["sst"],
-#            "sd": "000001",
-#            "default_indicator": True,
-#            "session": [{
-#                "name": config["dnn"],
-#                "type": 3,
-#                "pcc_rule": [],
-#                "ambr": {
-#                    "uplink": {"value": config["bw"], "unit": 2},
-#                    "downlink": {"value": config["bw"], "unit": 2}
-#                },
-#                "qos": {
-#                    "index": 9 if config["sst"] == 1 else (80 if config["sst"] == 2 else 5),
-#                    "arp": {"priority_level": 10, "pre_emption_capability": 1, "pre_emption_vulnerability": 1}
-#                }
-#            }]
-#        }]
-
-#        o5gs.addSubscriber(profile)
-#        print(f"Added UE with IMSI: {config['imsi']} for SST: {config['sst']} (DNN: {config['dnn']})")
-    for config in ue_configs:
-        profile = copy.deepcopy(base_profile)
-        profile["imsi"] = config["imsi"]
-
-        # UE-AMBR must upper-bound the session AMBR (.json at 1 Mbps)
-        # Enforced by the gNB in real 5G; UERANSIM does not enforce it, OVS emulates it
-        profile["ambr"] = {
-            "uplink": {"value": 200, "unit": 2},
-            "downlink": {"value": 200, "unit": 2},
-        }
-
-        q = SLICE_QOS[config["sst"]]
-        profile["slice"] = [{
-            "sst": config["sst"],
-            "sd": "000001",
-            "default_indicator": True,
-            "session": [{
-                "name": config["dnn"],
-                "type": 3,
-                "pcc_rule": [],
-                "ambr": {
-                    "uplink": {"value": config["bw"], "unit": 2},
-                    "downlink": {"value": config["bw"], "unit": 2}
+# =============================================================================
+# Container helpers
+# =============================================================================
+def add_upf(net, name, ip, component):
+    """Open5GS UPF container (Cloud / Edge / IoT)"""
+    return net.addDockerHost(
+        name, dimage = IMAGE_OPEN5GS, ip = ip,
+        dcmd = "bash /open5gs/install/etc/open5gs/temp/5gc_up_init.sh",
+        docker_args = {
+            "environment": {"COMPONENT_NAME": component},
+            "volumes": {
+                PROJECT_FOLDER + "/log": {
+                    "bind": "/open5gs/install/var/log/open5gs",
+                    "mode": "rw"
                 },
-                "qos": {
-                    "index": q["index"],
-                    "arp": {
-                        "priority_level": q["arp_pl"],
-                        "pre_emption_capability": q["cap"],
-                        "pre_emption_vulnerability": q["vuln"]
-                    }
-                }
-            }]
-        }]
+                PROJECT_FOLDER + "/open5gs/config": {
+                    "bind": "/open5gs/install/etc/open5gs/temp",
+                    "mode": "rw"
+                },
+                "/etc/timezone": {"bind": "/etc/timezone", "mode": "ro"},
+                "/etc/localtime": {"bind": "/etc/localtime", "mode": "ro"},
+            },
+            "cap_add": ["NET_ADMIN"],
+            "sysctls": {"net.ipv4.ip_forward": 1},
+            "devices": "/dev/net/tun:/dev/net/tun:rwm",
+        },
+    )
 
-        o5gs.addSubscriber(profile)
-        print(f"Added IMSI {config['imsi']} | SST {config['sst']} | DNN {config['dnn']} |"
-              f"AMBR {config['bw']} Mbps | 5QI {q['index']} | ARP PL {q['arp_pl']}")
+def add_ran(net, name, ip, extra_args=None):
+    """UERANSIM container (gNB or UE)"""
+    args = {
+        "volumes": {
+            PROJECT_FOLDER + "/ueransim/config": {"bind": "/mnt/ueransim", "mode": "rw"},
+            PROJECT_FOLDER + "/log": {"bind": "/mnt/log", "mode": "rw"},
+            "/etc/timezone": {"bind": "/etc/timezone", "mode": "ro"},
+            "/etc/localtime": {"bind": "/etc/localtime", "mode": "ro"},
+            "/dev": {"bind": "/dev", "mode": "rw"},
+        },
+        "cap_add": ["NET_ADMIN"],
+        "devices": "/dev/net/tun:/dev/net/tun:rwm",
+    }
+    if extra_args:
+        args.update(extra_args)
+    return net.addDockerHost(name, dimage = IMAGE_UERANSIM, ip = ip, docker_args = args)
+
+def provision_subscribers():
+    """Wipe and re-create the 10 slice subscribers in Open5GS"""
+    o5gs = Open5GS(MONGO_ADDR, MONGO_PORT)
+    o5gs.removeAllSubscribers()
+    with open(SUBSCRIBERS_JSON) as f:
+        base = json.load(f)
+    for cfg in UE_CONFIGS:
+        q = SLICE_QOS[cfg["sst"]]
+        p = copy.deepcopy(base)
+        p["imsi"] = cfg["imsi"]
+        p["ambr"] = {"uplink": {"value": 200, "unit": 2},
+                     "downlink": {"value": 200, "unit": 2}}
+        p["slice"] = [{
+            "sst": cfg["sst"], "sd": "000001", "default_indicator": True,
+            "session": [{
+                "name": cfg["dnn"], "type": 3, "pcc_rule": [],
+                "ambr": {"uplink": {"value": cfg["bw"], "unit": 2},
+                         "downlink": {"value": cfg["bw"], "unit": 2}},
+                "qos": {"index": q["index"],
+                        "arp": {"priority_level": q["arp_pl"],
+                                "pre_emption_capability": q["cap"],
+                                "pre_emption_vulnerability": q["vuln"]}},
+            }],
+        }]
+        o5gs.addSubscriber(p)
+        print(f"  {cfg['imsi']} | SST {cfg['sst']} | DNN {cfg['dnn']:8} | "
+              f"AMBR {cfg['bw']:>3} Mbps | 5QI {q['index']} | ARP {q['arp_pl']}")
+
+def main_menu():
+    print("\n\033[95m" + "=" * MENU_W)
+    print("  5G NETWORK SLICING  -  MAIN MENU")
+    print("=" * MENU_W + "\033[0m")
+    print("  [1] : Latency Test           per-UE RTT through 5G tunnel")
+    print("  [2] : Inter-slice isolation  eMBB congestion vs. URLLC")
+    print("  [3] : QoS / AMBR policing    mMTC IoT-DDoS mitigation")
+    print("  [4] : Manual Mininet CLI")
+    print("  [0] : Exit and stop the network")
+    print("#" * MENU_W)
+
+# =============================================================================
+# Topology build and management
+# =============================================================================
+if __name__ == "__main__":
+    setLogLevel("info")
+    net = Containernet(controller=Controller, link=TCLink)
+
+    info("*** Adding 5G core control plane (cp)\n")
+    cp = net.addDockerHost(
+        "cp", dimage = IMAGE_OPEN5GS, ip = "192.168.0.111/24",
+        dcmd = "bash /open5gs/install/etc/open5gs/5gc_cp_init.sh",
+        docker_args = {
+            "ports" : { "3000/tcp": 3000 },
+            "volumes": {
+                PROJECT_FOLDER + "/log": {
+                    "bind": "/open5gs/install/var/log/open5gs",
+                    "mode": "rw",
+                },
+                MONGODB_DIR: {
+                    "bind": "/var/lib/mongodb",
+                    "mode": "rw",
+                },
+                PROJECT_FOLDER + "/open5gs/config": {
+                    "bind": "/open5gs/install/etc/open5gs",
+                    "mode": "rw",
+                },
+                "/etc/timezone": {"bind": "/etc/timezone", "mode": "ro"},
+                "/etc/localtime": {"bind": "/etc/localtime", "mode": "ro"},
+            },
+        },
+    )
+
+    info("*** Adding UPFs: Cloud (eMBB), Edge-MEC (URLLC), IoT (mMTC)\n")
+    upf_cld = add_upf(net, "upf_cld", "192.168.0.112/24", "upf_cld")
+    upf_mec = add_upf(net, "upf_mec", "192.168.0.113/24", "upf_mec")
+    upf_iot = add_upf(net, "upf_iot", "192.168.0.114/24", "upf_iot")
+
+    info("*** Adding RAN: 2 gNBs + %d UEs\n" % len(UE_CONFIGS))
+    gnb1 = add_ran(net, "gnb1", "192.168.0.131/24")
+    gnb2 = add_ran(net, "gnb2", "192.168.0.132/24")
+    ue_nodes = []
+    for i in range(1, len(UE_CONFIGS) + 1):
+        ue_nodes.append(add_ran(net, f"ue{i}", f"192.168.0.{140 + i}/24"))
+
+    info("*** Adding controller and switches\n")
+    net.addController("c0")
+    s1 = net.addSwitch("s1")   # access    (UEs + gNBs)
+    s2 = net.addSwitch("s2")   # edge      (URLLC UPF + control plane)
+    s3 = net.addSwitch("s3")   # cloud     (eMBB UPF)
+    s4 = net.addSwitch("s4")   # IoT cloud (mMTC UPF)
+
+    info("*** Adding links (shaping on s2-s3 backhaul bottleneck)\n")
+    net.addLink(s1, s2, delay = EDGE_DELAY, intfName1 = "s1-s2", intfName2 = "s2-s1")
+    net.addLink(s2, s3, bw = BACKHAUL_BW, delay = BACKHAUL_DELAY, max_queue_size = BACKHAUL_QLEN, 
+                intfName1 = "s2-s3", intfName2 = "s3-s2")
+    net.addLink(s2, s4, delay = BACKHAUL_DELAY, intfName1 = "s2-s4", intfName2 = "s4-s2")
+    net.addLink(cp, s2, delay = "1ms", intfName1 = "cp-s2", intfName2 = "s2-cp")
+    net.addLink(upf_cld, s3, delay = "1ms", intfName1 = "upf-s3", intfName2 = "s3-upf_cld")
+    net.addLink(upf_iot, s4, delay = "1ms", intfName1 = "upf_iot-s4", intfName2 = "s4-upf_iot")
+    net.addLink(upf_mec, s2, delay = "1ms", intfName1 = "upf_mec-s2", intfName2 = "s2-upf_mec")
+    net.addLink(gnb1, s1, delay = "1ms", intfName1 = "gnb1-s1", intfName2 = "s1-gnb1")
+    net.addLink(gnb2, s1, delay = "1ms", intfName1 = "gnb2-s1", intfName2 = "s1-gnb2")
+
+    for i, ue in enumerate(ue_nodes, 1):
+        net.addLink(ue, s1, delay = "1ms", intfName1 = f"ue{i}-s1", intfName2 = f"s1-ue{i}")
+
+    print("*** Open5GS: provisioning %d slice subscribers\n" % len (UE_CONFIGS))
+    provision_subscribers()
 
     info("\n*** Starting network\n")
     net.start()
 
-    info("*** Waiting for AMF NGAP listener\n")
+    info("*** Waiting for the AMF NGAP listener (SCTP 38412)\n")
     while "38412" not in cp.cmd("cat /proc/net/sctp/eps"):
         time.sleep(1)
 
-    info("*** Starting gNBs\n")
+    info("*** Starting gNBs and waiting for NG setup\n")
     for name, yaml in (("gnb1", "open5gs-gnb1.yaml"), ("gnb2", "open5gs-gnb2.yaml")):
-        g = net.get(name)
-        g.cmd(f"/UERANSIM/build/nr-gnb -c /mnt/ueransim/{yaml} > /mnt/log/{name}.log 2>&1 &")
+        net.get(name).cmd(f"/UERANSIM/build/nr-gnb -c /mnt/ueransim/{yaml} > /mnt/log/{name}.log 2>&1 &")
     for name in ("gnb1", "gnb2"):
         while "successful" not in net.get(name).cmd(
                 f"grep -s 'NG Setup procedure is successful' /mnt/log/{name}.log; true"):
             time.sleep(1)
-    print("*** Both gNBs registered with AMF")
+    print("*** Both gNBs registered with the AMF")
 
-    info("*** Starting UEs\n")
-    DNN_SUBNET = {1: "10.45.0.0/16", 2: "10.45.0.0/16", 7: "10.45.0.0/16", 8: "10.45.0.0/16",
-                  3: "10.46.0.0/16", 4: "10.46.0.0/16", 9: "10.46.0.0/16", 10: "10.46.0.0/16",
-                  5: "10.47.0.0/16", 6: "10.47.0.0/16"}
+    info("*** Starting UEs and waiting for PDU sessions\n")
     for i, ue in enumerate(ue_nodes, 1):
         ue.cmd(f"/UERANSIM/build/nr-ue -c /mnt/ueransim/open5gs-ue{i}.yaml > /mnt/log/ue{i}.log 2>&1 &")
         time.sleep(2)
     for i, ue in enumerate(ue_nodes, 1):
+        gw, subnet = SLICE_DN[UE_CONFIGS[i - 1]["sst"]]
         up = False
         for attempt in range(40):
             if "inet" in ue.cmd("ip -4 addr show uesimtun0 2>/dev/null"):
@@ -417,88 +261,38 @@ if __name__ == "__main__":
                 ue.cmd("pkill -9 nr-ue; sleep 1")
                 ue.cmd(f"/UERANSIM/build/nr-ue -c /mnt/ueransim/open5gs-ue{i}.yaml > /mnt/log/ue{i}.log 2>&1 &")
         if up:
-            # route this UE's DN subnet through its PDU session
-            ue.cmd(f"ip route replace {DNN_SUBNET[i]} dev uesimtun0")
-            print(f"    ue{i}: PDU session up")
+            ue.cmd(f"ip route replace {subnet} dev uesimtun0")
+            ue.cmd(f"ping -c 1 -W 1 {gw} > /dev/null 2>&1")
+            print(f"    ue{i}: PDU session up ({subnet} via uesimtun0)")
         else:
             print(f"    ue{i}: \033[91mWARNING: no PDU session after 40s - proceeding\033[0m")
 
-#    info("*** Disabling NIC offloads\n")
-#    for sw_name in ("s1", "s2", "s3", "s4"):
-#        sw = net.get(sw_name)
-#        for intf in sw.intfList():
-#            if intf.name != "lo":
-#                sw.cmd(f"ethtool -K {intf.name} tso off gso off gro off")
-#    for h in [cp, upf_cld, upf_mec, upf_iot, gnb1, gnb2] + ue_nodes:
-#        for intf in h.intfList():
-#            if intf.name != "lo":
-#                h.cmd(f"ethtool -K {intf.name} tso off gso off gro off 2>/dev/null")
-
-    info("*** Warming up tunnel paths\n")
-    DN_GW = {1: "10.45.0.1", 2: "10.45.0.1", 7: "10.45.0.1", 8: "10.45.0.1",
-             3: "10.46.0.1", 4: "10.46.0.1", 9: "10.46.0.1", 10: "10.46.0.1",
-             5: "10.47.0.1", 6: "10.47.0.1"}
-    for i, ue in enumerate(ue_nodes, 1):
-        ue.cmd(f"ping -c 1 -W 1 {DN_GW[i]} > /dev/null 2>&1")
-
-    # *** 5G Core - AMBR Policies for mMTC devices ***
-    s1 = net.get('s1')
-    ue5 = net.get('ue5')
-    ue6 = net.get('ue6')
-
-    s1_ue5_port = s1.connectionsTo(ue5)[0][0].name
-    s1_ue6_port = s1.connectionsTo(ue6)[0][0].name
-
-#    interface_ue5 = ue5.defaultIntf().name
-#    interface_ue6 = ue6.defaultIntf().name
-
-    s1.cmd(f"ovs-vsctl set interface {s1_ue5_port} ingress_policing_rate=5000")
-    s1.cmd(f"ovs-vsctl set interface {s1_ue5_port} ingress_policing_burst=1000")
-
-    s1.cmd(f"ovs-vsctl set interface {s1_ue6_port} ingress_policing_rate=5000")
-    s1.cmd(f"ovs-vsctl set interface {s1_ue6_port} ingress_policing_burst=1000")
-
-#    ue5.cmd(f"tc qdisc del dev {interface_ue5} root 2>/dev/null")
-#    ue5.cmd(f"tc qdisc add dev {interface_ue5} root tbf rate 5mbit burst 32kbit latency 20ms")
-
-#    ue6.cmd(f"tc qdisc del dev {interface_ue6} root 2>/dev/null")
-#    ue6.cmd(f"tc qdisc add dev {interface_ue6} root tbf rate 5mbit burst 32kbit latency 20ms")
-
-    #if not AUTOTEST_MODE:
-    #    print("\n*** Network successfully started! ***\n")
+    info("*** Applying mMTC RAN-side rate limit (OVS ingress policing on UE5/UE6)\n")
+    # UERANSIM's gNB does not enforce UE-AMBR, so it is emulated here to give the Option-3
+    # AMBR test a visible RAN-side cap on the mMTC devices
+    s1 = net.get("s1")
+    for name in ("ue5", "ue6"):
+        port = s1.connectionsTo(net.get(name))[0][0].name
+        s1.cmd(f"ovs-vsctl set interface {port} ingress_policing_rate={MMTC_POLICY_KBPS}")
+        s1.cmd(f"ovs-vsctl set interface {port} ingress_policing_burst={MMTC_POLICY_BURST}")
 
     while True:
-        print("\n\033[95m" + "#"*50)
-        print(" 5G NETWORK SLICING: MAIN MENU")
-        print("#"*50 + "\033[0m")
-        print(" Option [1] : Latency Test")
-        print(" Option [2] : Inter-Slice Performance Isolation Test")
-        print(" Option [3] : Slice-Specific QoS and AMBR Policing Test")
-        print(" Option [4] : Drop to Manual Mininet CLI")
-        print(" Option [0] : Exit and Stop Network")
-        print("#"*50)
+        main_menu()
+        choice = input("  Select an option (0-4): ").strip()
 
-        main_choice = input("Select an option (0-4): ")
-
-        if main_choice == '1':
+        if choice == "1":
             option1_menu(net)
-        elif main_choice == '2':
+        elif choice == "2":
             option2_menu(net)
-        elif main_choice == '3':
+        elif choice == "3":
             option3_menu(net)
-        elif main_choice == '4':
+        elif choice == "4":
             CLI(net)
-        elif main_choice == '0':
-            print("\nExiting demo. Shutting down network...")
+        elif choice == "0":
+            print("\n  Exiting demo. Shutting down the network...")
             break
         else:
-            print("\nINVALID CHOICE! Try again.")
-
-    #if not AUTOTEST_MODE:
-        # spawnXtermDocker("open5gs")
-        # spawnXtermDocker("gnb")
-    #    CLI(net)
+            print("\n  INVALID CHOICE - please try again.")
 
     net.stop()
-
 
