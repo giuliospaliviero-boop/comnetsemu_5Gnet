@@ -23,7 +23,6 @@ from python_modules.Open5GS import Open5GS
 from option1_latency_test import option1_menu
 from option2_isolation_test import option2_menu
 from option3_qos_ambr_policing import option3_menu
-from option4_resource_isolation import option4_menu
 
 # =============================================================================
 # CONFIGURATION - variables
