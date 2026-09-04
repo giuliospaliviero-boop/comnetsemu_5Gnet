@@ -41,6 +41,7 @@ MONGO_PORT = "27017"
 EDGE_DELAY = "2ms"    # s1 <--> s2 access to edge
 BACKHAUL_BW = 100     # Mbps, s2<-->s3 edge to cloud BOTTLENECK
 BACKHAUL_DELAY = "40ms"
+IOT_DELAY = "80ms"
 BACKHAUL_QLEN = 700   # packets = 1x BDP (100 Mbps x 88 ms RTT)
 
 # mMTC RAN-side rate limit (OVS ingress policing, to emulate UE-AMBR at the gNB)
@@ -221,7 +222,7 @@ if __name__ == "__main__":
     net.addLink(s1, s2, delay = EDGE_DELAY, intfName1 = "s1-s2", intfName2 = "s2-s1")
     net.addLink(s2, s3, bw = BACKHAUL_BW, delay = BACKHAUL_DELAY, max_queue_size = BACKHAUL_QLEN, 
                 intfName1 = "s2-s3", intfName2 = "s3-s2")
-    net.addLink(s2, s4, delay = BACKHAUL_DELAY, intfName1 = "s2-s4", intfName2 = "s4-s2")
+    net.addLink(s2, s4, delay = IOT_DELAY, intfName1 = "s2-s4", intfName2 = "s4-s2")
     net.addLink(cp, s2, delay = "1ms", intfName1 = "cp-s2", intfName2 = "s2-cp")
     net.addLink(upf_cld, s3, delay = "1ms", intfName1 = "upf-s3", intfName2 = "s3-upf_cld")
     net.addLink(upf_iot, s4, delay = "1ms", intfName1 = "upf_iot-s4", intfName2 = "s4-upf_iot")

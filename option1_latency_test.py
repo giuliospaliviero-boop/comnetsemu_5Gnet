@@ -47,7 +47,7 @@ def option1_menu(net):
         print("-" * 60 + "\033[0m")
         print("  eMBB  UEs [1, 2, 7, 8]   -> Cloud   (~100 ms, high-bandwidth apps)")
         print("  URLLC UEs [3, 4, 9, 10]  -> Edge    (~20 ms,  autonomous cars)")
-        print("  mMTC  UEs [5, 6]         -> IoT     (~100 ms, sensors)")
+        print("  mMTC  UEs [5, 6]         -> IoT     (~170 ms, sensors)")
         print("  [0] Return to MAIN MENU")
         print("-" * 60)
         choice = input("  Select a UE (0-10): ").strip()

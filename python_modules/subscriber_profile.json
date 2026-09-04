@@ -6,52 +6,17 @@
     "access_restriction_data": 32,
     "slice": [
         {
+	    "Comment": "TEMPLATE ONLY - the real slice/QoS/AMBR are built per-UE at runtime by provision_subscribers() in run_5g_slicing_demo.py (see UE_CONFIGS and SLICE_QOS). This block is overwritten",
             "sst": 1,
             "default_indicator": true,
             "sd": "000001",
-            "session": [
-                {
-                    "name": "internet",
-                    "type": 3,
-                    "pcc_rule": [],
-                    "ambr": {
-                        "Comment": "unit=2 ==> Mbps",
-                        "uplink":   {"value": 2, "unit": 2},
-                        "downlink": {"value": 2, "unit": 2}
-                    },
-                    "qos": {
-                        "index": 8,
-                        "arp": {"priority_level": 15, "pre_emption_capability": 1, "pre_emption_vulnerability": 1}
-                    }
-                }
-            ]
-        },
-        {
-            "sst": 2,
-            "default_indicator": null,
-            "sd": "000001",
-            "session": [
-                {
-                    "name": "mec",
-                    "type": 3,
-                    "pcc_rule": [],
-                    "ambr": {
-                        "Comment": "unit=2 ==> Mbps",
-                        "uplink":   {"value": 10, "unit": 2},
-                        "downlink": {"value": 10, "unit": 2}
-                    },
-                    "qos": {
-                        "index": 8,
-                        "arp": {"priority_level": 15, "pre_emption_capability": 1, "pre_emption_vulnerability": 1}
-                    }
-                }
-            ]
+            "session": []
         }
     ],
     "ambr": {
-        "Comment": "unit=2 ==> Mbps",
-        "uplink": {"value": 1, "unit": 2},
-        "downlink": {"value": 1, "unit": 2}
+        "Comment": "TEMPLATE ONLY - overwritten per-UE at runtime (UE-AMBR set to 200 Mbps)",
+        "uplink": {"value": 200, "unit": 2},
+        "downlink": {"value": 200, "unit": 2}
     },
     "security": {
         "k": "8baf473f2f8fd09487cccbd7097c6862",
