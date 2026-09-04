@@ -648,3 +648,24 @@ Open5GS daemon v2.4.4
 08/29 14:46:17.068: [app] WARNING: Try to discover [UDM] (../lib/sbi/path.c:110)
 08/29 14:46:17.069: [ausf] INFO: [61881340-a3b8-41f1-b78b-b3d20eff907d] (NF-discover) NF registered (../src/ausf/nnrf-handler.c:283)
 08/29 14:46:17.069: [ausf] INFO: [61881340-a3b8-41f1-b78b-b3d20eff907d] (NF-discover) NF Profile updated (../src/ausf/nnrf-handler.c:329)
+Open5GS daemon v2.4.4
+
+09/04 11:00:49.665: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/ausf.yaml' (../lib/app/ogs-init.c:129)
+09/04 11:00:49.665: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/ausf.log' (../lib/app/ogs-init.c:132)
+09/04 11:00:49.670: [sbi] INFO: nghttp2_server() [127.0.0.11]:7777 (../lib/sbi/nghttp2-server.c:144)
+09/04 11:00:49.683: [app] INFO: AUSF initialize...done (../src/ausf/app.c:31)
+09/04 11:00:49.702: [ausf] INFO: [e36dc6d4-a84f-41f1-a168-4752515465c8] NF registred [Heartbeat:10s] (../src/ausf/nf-sm.c:198)
+09/04 11:00:51.775: [app] WARNING: Try to discover [UDM] (../lib/sbi/path.c:110)
+09/04 11:00:51.775: [ausf] INFO: [e36db946-a84f-41f1-9994-e12423ac482a] (NF-discover) NF registered (../src/ausf/nnrf-handler.c:283)
+09/04 11:00:51.776: [ausf] INFO: [e36db946-a84f-41f1-9994-e12423ac482a] (NF-discover) NF Profile updated (../src/ausf/nnrf-handler.c:329)
+09/04 12:00:51.787: [ausf] INFO: [e36db946-a84f-41f1-9994-e12423ac482a] NF expired (../src/ausf/nf-sm.c:291)
+Open5GS daemon v2.4.4
+
+09/04 15:18:44.233: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/ausf.yaml' (../lib/app/ogs-init.c:129)
+09/04 15:18:44.233: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/ausf.log' (../lib/app/ogs-init.c:132)
+09/04 15:18:44.234: [sbi] INFO: nghttp2_server() [127.0.0.11]:7777 (../lib/sbi/nghttp2-server.c:144)
+09/04 15:18:44.241: [app] INFO: AUSF initialize...done (../src/ausf/app.c:31)
+09/04 15:18:44.243: [ausf] INFO: [eafcdd3a-a873-41f1-b2d9-01edddb1f2ee] NF registred [Heartbeat:10s] (../src/ausf/nf-sm.c:198)
+09/04 15:18:45.960: [app] WARNING: Try to discover [UDM] (../lib/sbi/path.c:110)
+09/04 15:18:45.961: [ausf] INFO: [eafcdc04-a873-41f1-acac-1fdb13c6eb5d] (NF-discover) NF registered (../src/ausf/nnrf-handler.c:283)
+09/04 15:18:45.961: [ausf] INFO: [eafcdc04-a873-41f1-acac-1fdb13c6eb5d] (NF-discover) NF Profile updated (../src/ausf/nnrf-handler.c:329)

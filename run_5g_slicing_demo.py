@@ -23,6 +23,7 @@ from python_modules.Open5GS import Open5GS
 from option1_latency_test import option1_menu
 from option2_isolation_test import option2_menu
 from option3_qos_ambr_policing import option3_menu
+from option4_priority_scheduling import option4_menu
 
 # =============================================================================
 # CONFIGURATION - variables
@@ -60,11 +61,11 @@ UE_CONFIGS = [
         {"imsi": "001010000000010", "sst": 2, "dnn": "mec",      "bw": 20},  # UE10 URLLC
     ]
 
-# Per-slice QoS
+# Per-slice QoS profiles
 SLICE_QOS = {
-        1: {"index": 9, "arp_pl": 8, "cap": 1, "vuln": 2},   # eMBB : 5QI 9  non-GBR
+        1: {"index": 9, "arp_pl": 8, "cap": 1, "vuln": 2},   # eMBB : 5QI 9
         2: {"index": 80, "arp_pl": 2, "cap": 2, "vuln": 1},  # URLLC: 5QI 80 low-latency
-        3: {"index": 9, "arp_pl": 14, "cap": 1, "vuln": 2},  # mMTC : 5QI 9  delay-tolerant
+        3: {"index": 9, "arp_pl": 14, "cap": 1, "vuln": 2},  # mMTC : 5QI 9
     }
 
 # Slice (SST) --> Data network
@@ -133,13 +134,17 @@ def provision_subscribers():
         p["ambr"] = {"uplink": {"value": 200, "unit": 2},
                      "downlink": {"value": 200, "unit": 2}}
         p["slice"] = [{
-            "sst": cfg["sst"], "sd": "000001", "default_indicator": True,
+            "sst": cfg["sst"],           # Slice/Service Type: 1 eMBB, 2 URLLC, 3 mMTC
+            "sd": "000001",              # Slice Differentiatior --> together they form the S-NSSAI
+            "default_indicator": True,
             "session": [{
-                "name": cfg["dnn"], "type": 3, "pcc_rule": [],
-                "ambr": {"uplink": {"value": cfg["bw"], "unit": 2},
+                "name": cfg["dnn"],      # DNN: internet / mec / iot --> selects the UPF at the SMF
+                "type": 3,               # IPv4 PDU session
+                "pcc_rule": [],
+                "ambr": {"uplink": {"value": cfg["bw"], "unit": 2},      # Session-AMBR (unit 2 = Mbps)
                          "downlink": {"value": cfg["bw"], "unit": 2}},
-                "qos": {"index": q["index"],
-                        "arp": {"priority_level": q["arp_pl"],
+                "qos": {"index": q["index"],                             # 5QI
+                        "arp": {"priority_level": q["arp_pl"],           # ARP priority (1 = highest)
                                 "pre_emption_capability": q["cap"],
                                 "pre_emption_vulnerability": q["vuln"]}},
             }],
@@ -155,7 +160,8 @@ def main_menu():
     print("  [1] : Latency Test")
     print("  [2] : Inter-slice Performance Isolation (spatial)")
     print("  [3] : Slice-Specific QoS / AMBR Policing")
-    print("  [4] : Manual Mininet CLI")
+    print("  [4] : Scheduling-based Isolation on shared link")
+    print("  [5] : Manual Mininet CLI")
     print("  [0] : Exit and stop the network")
     print("#" * MENU_W)
 
@@ -192,9 +198,10 @@ if __name__ == "__main__":
     )
 
     info("*** Adding UPFs: Cloud (eMBB), Edge-MEC (URLLC), IoT (mMTC)\n")
-    upf_cld = add_upf(net, "upf_cld", "192.168.0.112/24", "upf_cld")
-    upf_mec = add_upf(net, "upf_mec", "192.168.0.113/24", "upf_mec")
-    upf_iot = add_upf(net, "upf_iot", "192.168.0.114/24", "upf_iot")
+    # Distributed user plane: one UPF container per slice
+    upf_cld = add_upf(net, "upf_cld", "192.168.0.112/24", "upf_cld")  # eMBB --> cloud
+    upf_mec = add_upf(net, "upf_mec", "192.168.0.113/24", "upf_mec")  # URLLC --> edge
+    upf_iot = add_upf(net, "upf_iot", "192.168.0.114/24", "upf_iot")  # mMTC --> IoT
 
     info("*** Adding RAN: 2 gNBs + %d UEs\n" % len(UE_CONFIGS))
     gnb1 = add_ran(net, "gnb1", "192.168.0.131/24")
@@ -278,7 +285,7 @@ if __name__ == "__main__":
 
     while True:
         main_menu()
-        choice = input("  Select an option (0-4): ").strip()
+        choice = input("  Select an option (0-5): ").strip()
 
         if choice == "1":
             option1_menu(net)
@@ -287,6 +294,8 @@ if __name__ == "__main__":
         elif choice == "3":
             option3_menu(net)
         elif choice == "4":
+            option4_menu(net)
+        elif choice == "5":
             CLI(net)
         elif choice == "0":
             print("\n  Exiting demo. Shutting down the network...")

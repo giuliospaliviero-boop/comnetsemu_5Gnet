@@ -660,3 +660,23 @@ Open5GS daemon v2.4.4
 08/29 14:46:13.083: [udm] INFO: [61881340-a3b8-41f1-b78b-b3d20eff907d] NF registred [Heartbeat:10s] (../src/udm/nf-sm.c:198)
 08/29 14:46:13.087: [udm] INFO: [6188afa8-a3b8-41f1-a921-8d590f74bb27] (NRF-notify) NF registered (../src/udm/nnrf-handler.c:180)
 08/29 14:46:13.087: [udm] INFO: [6188afa8-a3b8-41f1-a921-8d590f74bb27] (NRF-notify) NF Profile updated (../src/udm/nnrf-handler.c:199)
+Open5GS daemon v2.4.4
+
+09/04 11:00:49.669: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/udm.yaml' (../lib/app/ogs-init.c:129)
+09/04 11:00:49.669: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/udm.log' (../lib/app/ogs-init.c:132)
+09/04 11:00:49.669: [sbi] INFO: nghttp2_server() [127.0.0.12]:7777 (../lib/sbi/nghttp2-server.c:144)
+09/04 11:00:49.682: [app] INFO: UDM initialize...done (../src/udm/app.c:31)
+09/04 11:00:49.707: [udm] INFO: [e36db946-a84f-41f1-9994-e12423ac482a] NF registred [Heartbeat:10s] (../src/udm/nf-sm.c:198)
+09/04 11:00:51.776: [app] WARNING: Try to discover [UDR] (../lib/sbi/path.c:110)
+09/04 11:00:51.777: [udm] INFO: [e36f7772-a84f-41f1-bc37-c7b051223a15] (NF-discover) NF registered (../src/udm/nnrf-handler.c:284)
+09/04 11:00:51.777: [udm] INFO: [e36f7772-a84f-41f1-bc37-c7b051223a15] (NF-discover) NF Profile updated (../src/udm/nnrf-handler.c:330)
+09/04 12:00:51.787: [udm] INFO: [e36f7772-a84f-41f1-bc37-c7b051223a15] NF expired (../src/udm/nf-sm.c:291)
+Open5GS daemon v2.4.4
+
+09/04 15:18:44.233: [app] INFO: Configuration: '/open5gs/install/etc/open5gs/udm.yaml' (../lib/app/ogs-init.c:129)
+09/04 15:18:44.233: [app] INFO: File Logging: '/open5gs/install/var/log/open5gs/udm.log' (../lib/app/ogs-init.c:132)
+09/04 15:18:44.234: [sbi] INFO: nghttp2_server() [127.0.0.12]:7777 (../lib/sbi/nghttp2-server.c:144)
+09/04 15:18:44.240: [app] INFO: UDM initialize...done (../src/udm/app.c:31)
+09/04 15:18:44.243: [udm] INFO: [eafcdc04-a873-41f1-acac-1fdb13c6eb5d] NF registred [Heartbeat:10s] (../src/udm/nf-sm.c:198)
+09/04 15:18:44.251: [udm] INFO: [eafe99fe-a873-41f1-9e04-0fbb930f5179] (NRF-notify) NF registered (../src/udm/nnrf-handler.c:180)
+09/04 15:18:44.251: [udm] INFO: [eafe99fe-a873-41f1-9e04-0fbb930f5179] (NRF-notify) NF Profile updated (../src/udm/nnrf-handler.c:199)
